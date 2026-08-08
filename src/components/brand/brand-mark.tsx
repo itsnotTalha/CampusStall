@@ -6,12 +6,20 @@ import { cn } from "@/lib/utils";
 type BrandMarkProps = {
   compact?: boolean;
   className?: string;
+  href?: string;
+  name?: string;
 };
 
-export function BrandMark({ compact = false, className }: BrandMarkProps) {
+export function BrandMark({
+  compact = false,
+  className,
+  href = "/dashboard",
+  name = "CampusStall",
+}: BrandMarkProps) {
   return (
     <Link
-      href="/dashboard"
+      href={href}
+      aria-label={compact ? name : undefined}
       className={cn(
         "inline-flex items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className,
@@ -22,10 +30,9 @@ export function BrandMark({ compact = false, className }: BrandMarkProps) {
       </span>
       {!compact && (
         <span className="text-[1.05rem] font-semibold tracking-[-0.025em]">
-          CampusStall
+          {name}
         </span>
       )}
-      <span className="sr-only">CampusStall dashboard</span>
     </Link>
   );
 }

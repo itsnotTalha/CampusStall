@@ -1,6 +1,6 @@
-# UniHub
+# CampusStall
 
-UniHub is a student marketplace with four primary areas:
+CampusStall is a student marketplace with four primary areas:
 
 1. Ready-Made Projects
    Students sell software, ML, IoT, electronics, design and other projects they own or are permitted to distribute.

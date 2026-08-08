@@ -1,0 +1,49 @@
+import Link from "next/link";
+
+import { BrandMark } from "@/components/brand/brand-mark";
+import { LandingMobileNavigation } from "@/components/landing/landing-mobile-navigation";
+import { PageContainer } from "@/components/layout/page-container";
+import { buttonVariants } from "@/components/ui/button";
+import { landingNavigation } from "@/data/landing";
+import { cn } from "@/lib/utils";
+
+export function PublicHeader() {
+  return (
+    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">
+      <PageContainer className="flex h-16 items-center py-0 lg:h-[4.5rem]">
+        <BrandMark href="/" name="CampusStall" />
+        <nav
+          aria-label="Landing page navigation"
+          className="ml-10 hidden items-center gap-1 md:flex"
+        >
+          {landingNavigation.map((item) => (
+            <Link
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground outline-none transition-colors hover:bg-muted/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="ml-auto hidden items-center gap-2 md:flex">
+          <Link
+            href="/sell"
+            className={cn(buttonVariants({ variant: "ghost" }), "h-9 px-3")}
+          >
+            Sell your project
+          </Link>
+          <Link
+            href="/explore"
+            className={cn(buttonVariants(), "h-9 px-4 shadow-sm")}
+          >
+            Explore
+          </Link>
+        </div>
+        <div className="ml-auto md:hidden">
+          <LandingMobileNavigation />
+        </div>
+      </PageContainer>
+    </header>
+  );
+}
