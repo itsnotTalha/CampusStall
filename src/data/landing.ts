@@ -13,16 +13,18 @@ import {
   FileCode2,
   GraduationCap,
   Handshake,
-  Lightbulb,
   MessageCircleQuestion,
-  Palette,
   RadioTower,
   ScanEye,
   ShieldCheck,
   Smartphone,
   Store,
-  Wrench,
 } from "lucide-react";
+
+import {
+  marketplaceProjects,
+  marketplaceServices,
+} from "@/data/marketplace";
 
 export type LandingNavigationItem = {
   label: string;
@@ -34,27 +36,6 @@ export type ProjectCategory = {
   slug: string;
   icon: LucideIcon;
   tone: string;
-};
-
-export type FeaturedProject = {
-  title: string;
-  slug: string;
-  category: string;
-  summary: string;
-  price: string;
-  tags: readonly string[];
-  icon: LucideIcon;
-  visualTone: string;
-};
-
-export type PopularService = {
-  title: string;
-  slug: string;
-  category: string;
-  summary: string;
-  startingPrice: string;
-  delivery: string;
-  icon: LucideIcon;
 };
 
 export type HowItWorksStep = {
@@ -71,11 +52,11 @@ export type DigitalPerk = {
 };
 
 export const landingNavigation: LandingNavigationItem[] = [
-  { label: "Categories", href: "#categories" },
-  { label: "Projects", href: "#projects" },
-  { label: "Services", href: "#services" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Student perks", href: "#perks" },
+  { label: "Categories", href: "/#categories" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Services", href: "/#services" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Student perks", href: "/#perks" },
 ];
 
 export const heroHighlights = [
@@ -148,95 +129,9 @@ export const projectCategories: ProjectCategory[] = [
   },
 ];
 
-export const featuredProjects: FeaturedProject[] = [
-  {
-    title: "Bangla Sentiment Analysis Toolkit",
-    slug: "bangla-sentiment-analysis-toolkit",
-    category: "AI / Machine Learning",
-    summary:
-      "A documented NLP starter with preprocessing, model training, and evaluation notebooks.",
-    price: "৳2,800",
-    tags: ["Python", "NLP", "Notebook"],
-    icon: BrainCircuit,
-    visualTone: "border-violet-200 bg-violet-50 text-violet-700",
-  },
-  {
-    title: "Smart Energy Monitor with ESP32",
-    slug: "smart-energy-monitor-esp32",
-    category: "IoT",
-    summary:
-      "An ESP32 monitoring prototype with circuit guide, dashboard, and setup documentation.",
-    price: "৳4,500",
-    tags: ["ESP32", "Sensors", "IoT"],
-    icon: RadioTower,
-    visualTone: "border-cyan-200 bg-cyan-50 text-cyan-700",
-  },
-  {
-    title: "Campus Shuttle Tracker",
-    slug: "campus-shuttle-tracker",
-    category: "Mobile Apps",
-    summary:
-      "A cross-platform tracking app starter with route views and a clean operations panel.",
-    price: "৳3,200",
-    tags: ["Flutter", "Maps", "Mobile"],
-    icon: Smartphone,
-    visualTone: "border-blue-200 bg-blue-50 text-blue-700",
-  },
-  {
-    title: "Portfolio CMS Starter",
-    slug: "portfolio-cms-starter",
-    category: "Web Development",
-    summary:
-      "A responsive portfolio and content dashboard prepared for straightforward customization.",
-    price: "৳1,800",
-    tags: ["Next.js", "TypeScript", "CMS"],
-    icon: FileCode2,
-    visualTone: "border-sky-200 bg-sky-50 text-sky-700",
-  },
-];
+export const featuredProjects = marketplaceProjects.slice(0, 4);
 
-export const popularServices: PopularService[] = [
-  {
-    title: "React & Next.js debugging",
-    slug: "react-nextjs-debugging",
-    category: "Development support",
-    summary:
-      "Work through UI, routing, state, or deployment issues with a student developer.",
-    startingPrice: "From ৳800",
-    delivery: "Remote session",
-    icon: Wrench,
-  },
-  {
-    title: "Capstone UI/UX design",
-    slug: "capstone-ui-ux-design",
-    category: "Design",
-    summary:
-      "Turn requirements into a clear user flow, wireframes, and a polished interface direction.",
-    startingPrice: "From ৳1,500",
-    delivery: "Design package",
-    icon: Palette,
-  },
-  {
-    title: "Arduino prototype mentoring",
-    slug: "arduino-prototype-mentoring",
-    category: "Electronics",
-    summary:
-      "Get guidance on component choices, circuits, code structure, and prototype debugging.",
-    startingPrice: "From ৳1,200",
-    delivery: "1:1 mentoring",
-    icon: Lightbulb,
-  },
-  {
-    title: "Data analysis consultation",
-    slug: "data-analysis-consultation",
-    category: "Data Science",
-    summary:
-      "Plan a clean analysis workflow and get help understanding models and visualizations.",
-    startingPrice: "From ৳1,000",
-    delivery: "Consultation",
-    icon: ChartSpline,
-  },
-];
+export const popularServices = marketplaceServices.slice(0, 4);
 
 export const howItWorksSteps: HowItWorksStep[] = [
   {

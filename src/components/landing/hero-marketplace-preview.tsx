@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 
 import { featuredProjects, marketplaceAreas } from "@/data/landing";
+import { formatBdt } from "@/lib/format";
 
 export function HeroMarketplacePreview() {
   return (
@@ -52,7 +53,7 @@ export function HeroMarketplacePreview() {
               return (
                 <div
                   className="flex items-center gap-3 rounded-xl border bg-background p-3 shadow-xs"
-                  key={project.slug}
+                  key={project.id}
                 >
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
                     <Icon aria-hidden="true" className="size-5" />
@@ -62,11 +63,11 @@ export function HeroMarketplacePreview() {
                       {project.title}
                     </span>
                     <span className="mt-1 block truncate text-[10px] text-muted-foreground sm:text-xs">
-                      {project.tags.join(" · ")}
+                      {project.technologies.join(" · ")}
                     </span>
                   </span>
                   <span className="text-xs font-semibold sm:text-sm">
-                    {project.price}
+                    {formatBdt(project.price)}
                   </span>
                 </div>
               );

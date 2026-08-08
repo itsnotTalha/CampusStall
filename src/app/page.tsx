@@ -130,7 +130,7 @@ export default function LandingPage() {
             />
             <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {featuredProjects.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
+                <ProjectCard key={project.id} project={project} />
               ))}
             </div>
             <div className="mt-8 text-center">
@@ -157,7 +157,7 @@ export default function LandingPage() {
             />
             <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {popularServices.map((service) => (
-                <ServiceCard key={service.slug} service={service} />
+                <ServiceCard key={service.id} service={service} />
               ))}
             </div>
           </PageContainer>
