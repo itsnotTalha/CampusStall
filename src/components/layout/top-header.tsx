@@ -3,6 +3,7 @@ import { Bell, CircleHelp } from "lucide-react";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { MarketplaceSearch } from "@/components/layout/marketplace-search";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 export function TopHeader() {
@@ -13,6 +14,7 @@ export function TopHeader() {
         <BrandMark className="lg:hidden" />
         <MarketplaceSearch className="ml-auto hidden max-w-xl sm:block lg:ml-0" />
         <div className="ml-auto flex items-center gap-1">
+          <ThemeToggle />
           <Button
             aria-label="Help and support"
             className="hidden text-muted-foreground sm:inline-flex"

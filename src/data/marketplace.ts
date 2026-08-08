@@ -78,7 +78,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 3200,
     hasPreview: true,
     icon: Leaf,
-    visualTone: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    visualTone:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300",
     createdAt: "2026-07-24",
     popularity: 96,
   },
@@ -97,7 +98,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 4500,
     hasPreview: true,
     icon: Eye,
-    visualTone: "border-indigo-200 bg-indigo-50 text-indigo-700",
+    visualTone:
+      "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-400/25 dark:bg-indigo-400/10 dark:text-indigo-300",
     createdAt: "2026-06-18",
     popularity: 92,
   },
@@ -116,7 +118,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 3800,
     hasPreview: true,
     icon: Droplets,
-    visualTone: "border-cyan-200 bg-cyan-50 text-cyan-700",
+    visualTone:
+      "border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-400/25 dark:bg-cyan-400/10 dark:text-cyan-300",
     createdAt: "2026-07-02",
     popularity: 98,
   },
@@ -135,7 +138,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 2500,
     hasPreview: true,
     icon: ShoppingCart,
-    visualTone: "border-sky-200 bg-sky-50 text-sky-700",
+    visualTone:
+      "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-400/25 dark:bg-sky-400/10 dark:text-sky-300",
     createdAt: "2026-07-29",
     popularity: 90,
   },
@@ -154,7 +158,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 5200,
     hasPreview: true,
     icon: Hospital,
-    visualTone: "border-rose-200 bg-rose-50 text-rose-700",
+    visualTone:
+      "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-300",
     createdAt: "2026-05-21",
     popularity: 94,
   },
@@ -173,7 +178,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 2800,
     hasPreview: true,
     icon: BrainCircuit,
-    visualTone: "border-violet-200 bg-violet-50 text-violet-700",
+    visualTone:
+      "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/25 dark:bg-violet-400/10 dark:text-violet-300",
     createdAt: "2026-07-11",
     popularity: 91,
   },
@@ -192,7 +198,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 4800,
     hasPreview: true,
     icon: ScanLine,
-    visualTone: "border-indigo-200 bg-indigo-50 text-indigo-700",
+    visualTone:
+      "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-400/25 dark:bg-indigo-400/10 dark:text-indigo-300",
     createdAt: "2026-08-01",
     popularity: 97,
   },
@@ -211,7 +218,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 1800,
     hasPreview: true,
     icon: WalletCards,
-    visualTone: "border-blue-200 bg-blue-50 text-blue-700",
+    visualTone:
+      "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/25 dark:bg-blue-400/10 dark:text-blue-300",
     createdAt: "2026-07-16",
     popularity: 86,
   },
@@ -230,7 +238,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 3400,
     hasPreview: false,
     icon: HousePlug,
-    visualTone: "border-teal-200 bg-teal-50 text-teal-700",
+    visualTone:
+      "border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-400/25 dark:bg-teal-400/10 dark:text-teal-300",
     createdAt: "2026-06-27",
     popularity: 88,
   },
@@ -249,7 +258,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 4200,
     hasPreview: true,
     icon: Network,
-    visualTone: "border-rose-200 bg-rose-50 text-rose-700",
+    visualTone:
+      "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-300",
     createdAt: "2026-07-20",
     popularity: 93,
   },
@@ -268,7 +278,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 3000,
     hasPreview: false,
     icon: Bot,
-    visualTone: "border-orange-200 bg-orange-50 text-orange-700",
+    visualTone:
+      "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-400/25 dark:bg-orange-400/10 dark:text-orange-300",
     createdAt: "2026-05-30",
     popularity: 82,
   },
@@ -287,7 +298,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 2200,
     hasPreview: true,
     icon: ChartSpline,
-    visualTone: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    visualTone:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300",
     createdAt: "2026-07-07",
     popularity: 84,
   },
@@ -306,7 +318,8 @@ export const marketplaceProjects: MarketplaceProject[] = [
     price: 3600,
     hasPreview: false,
     icon: CircuitBoard,
-    visualTone: "border-amber-200 bg-amber-50 text-amber-700",
+    visualTone:
+      "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-300",
     createdAt: "2026-06-09",
     popularity: 80,
   },
@@ -327,7 +340,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 800,
     deliveryTime: "1–2 days",
     icon: Bug,
-    visualTone: "border-sky-200 bg-sky-50 text-sky-700",
+    visualTone:
+      "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-400/25 dark:bg-sky-400/10 dark:text-sky-300",
     createdAt: "2026-07-28",
     popularity: 98,
   },
@@ -345,7 +359,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 1500,
     deliveryTime: "3–5 days",
     icon: Palette,
-    visualTone: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700",
+    visualTone:
+      "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 dark:border-fuchsia-400/25 dark:bg-fuchsia-400/10 dark:text-fuchsia-300",
     createdAt: "2026-07-13",
     popularity: 93,
   },
@@ -363,7 +378,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 1200,
     deliveryTime: "2 sessions",
     icon: HousePlug,
-    visualTone: "border-teal-200 bg-teal-50 text-teal-700",
+    visualTone:
+      "border-teal-200 bg-teal-50 text-teal-700 dark:border-teal-400/25 dark:bg-teal-400/10 dark:text-teal-300",
     createdAt: "2026-06-22",
     popularity: 95,
   },
@@ -381,7 +397,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 1000,
     deliveryTime: "1–2 days",
     icon: ChartSpline,
-    visualTone: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    visualTone:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300",
     createdAt: "2026-07-05",
     popularity: 89,
   },
@@ -399,7 +416,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 1400,
     deliveryTime: "2–3 days",
     icon: BrainCircuit,
-    visualTone: "border-violet-200 bg-violet-50 text-violet-700",
+    visualTone:
+      "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/25 dark:bg-violet-400/10 dark:text-violet-300",
     createdAt: "2026-08-02",
     popularity: 92,
   },
@@ -417,7 +435,8 @@ export const marketplaceServices: MarketplaceService[] = [
     startingPrice: 1100,
     deliveryTime: "1–3 days",
     icon: Database,
-    visualTone: "border-blue-200 bg-blue-50 text-blue-700",
+    visualTone:
+      "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-400/25 dark:bg-blue-400/10 dark:text-blue-300",
     createdAt: "2026-07-19",
     popularity: 90,
   },
