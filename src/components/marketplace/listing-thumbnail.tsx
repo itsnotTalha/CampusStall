@@ -27,7 +27,7 @@ export function ListingThumbnail({
         "relative flex aspect-[16/10] items-center justify-center overflow-hidden border-b bg-muted/45 p-6",
         className,
       )}
-      role="img"
+      role="group"
     >
       <div className="absolute inset-4 rounded-lg border border-dashed border-foreground/10" />
       <div
