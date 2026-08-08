@@ -1,5 +1,5 @@
 1. Foundation
-2. Application shell/design system
+2. Application shell/design system — Complete
 3. Landing page
 4. Marketplace/explore
 5. Project details/live preview

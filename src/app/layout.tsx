@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CampusStall",
+  title: {
+    default: "CampusStall",
+    template: "%s · CampusStall",
+  },
   description: "Built on campus. Made for students.",
 };
 
