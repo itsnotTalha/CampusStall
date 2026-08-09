@@ -196,6 +196,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="mt-7 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <PreviewExperience
               demoUrl={databaseListing?.demoUrl}
+              projectId={databaseListing?.databaseProjectId}
               previewKind={detail.previewKind}
               projectTitle={project.title}
               screenshots={detail.screenshots}

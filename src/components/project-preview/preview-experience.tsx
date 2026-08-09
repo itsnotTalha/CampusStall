@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { SendMessageButton } from "@/components/marketplace/send-message-button";
 import { DashboardPreview } from "@/components/project-preview/dashboard-preview";
 import { GenericProjectPreview } from "@/components/project-preview/generic-project-preview";
 import { MachineLearningPreview } from "@/components/project-preview/machine-learning-preview";
@@ -25,6 +26,7 @@ type MediaTab = "preview" | "screenshots" | "demo";
 
 type PreviewExperienceProps = {
   demoUrl?: string | null;
+  projectId?: string;
   projectTitle: string;
   previewKind: ProjectPreviewKind;
   screenshots: readonly ProjectScreenshot[];
@@ -39,6 +41,7 @@ const mediaTabs: { id: MediaTab; label: string; icon: typeof Sparkles }[] = [
 
 export function PreviewExperience({
   demoUrl,
+  projectId,
   projectTitle,
   previewKind,
   screenshots,
@@ -62,29 +65,34 @@ export function PreviewExperience({
 
   return (
     <section aria-label="Project media" className="overflow-hidden rounded-xl border bg-card shadow-sm">
-      <div className="flex gap-1 overflow-x-auto border-b bg-muted/25 p-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
+      <div className="flex flex-col gap-2 border-b bg-muted/25 p-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex gap-1 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
 
-          return (
-            <button
-              aria-pressed={activeTab === tab.id}
-              className={cn(
-                "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-xs font-medium text-muted-foreground transition-colors",
-                activeTab === tab.id && "bg-card text-foreground shadow-xs",
-              )}
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              type="button"
-            >
-              <Icon aria-hidden="true" className="size-3.5" />
-              {tab.label}
-            </button>
-          );
-        })}
-        <span className="ml-auto hidden items-center pr-2 text-[10px] font-medium text-muted-foreground sm:flex">
-          {isLiveListing ? "Seller-uploaded preview media" : "Safe simulated media"}
-        </span>
+            return (
+              <button
+                aria-pressed={activeTab === tab.id}
+                className={cn(
+                  "flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-xs font-medium text-muted-foreground transition-colors",
+                  activeTab === tab.id && "bg-card text-foreground shadow-xs",
+                )}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                type="button"
+              >
+                <Icon aria-hidden="true" className="size-3.5" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-2 self-start pr-1 sm:self-auto">
+          <span className="hidden text-[10px] font-medium text-muted-foreground sm:flex">
+            {isLiveListing ? "Seller-uploaded preview media" : "Safe simulated media"}
+          </span>
+          <SendMessageButton className="size-9" projectId={projectId} />
+        </div>
       </div>
 
       {activeTab === "preview" && (

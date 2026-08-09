@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { getAuthContext } from "@/lib/auth/session";
 import { databaseIdPattern, readDatabaseId } from "@/lib/database-id";
+import { searchMessagingUsers } from "@/lib/messages/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export async function openOrderConversationAction(formData: FormData) {
@@ -60,9 +61,12 @@ export async function sendMessageAction(formData: FormData) {
   if (!auth) redirect(`/sign-in?next=/messages/${conversationId}`);
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("send_conversation_message", {
-    message_body: body,
-    target_conversation_id: conversationId,
+  const { error } = await supabase.from("messages").insert({
+    attachment_metadata: {},
+    body,
+    conversation_id: conversationId,
+    message_type: "text",
+    sender_id: auth.userId,
   });
 
   if (error) redirect(`/messages/${conversationId}?error=send-failed`);
@@ -96,17 +100,11 @@ export async function searchMessagingUsersAction(query: string) {
     return { users: [], error: "Search query must be at least 3 characters" };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_messaging_users", {
-    query,
-  });
+  const { users, error } = await searchMessagingUsers(query);
 
-  if (error) {
-    console.error("Search error:", error);
-    return { users: [], error: "Search failed" };
-  }
+  if (error) return { users: [], error };
 
-  return { users: data || [], error: null };
+  return { users, error: null };
 }
 
 export async function openDirectConversationAction(formData: FormData) {

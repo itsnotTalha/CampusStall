@@ -26,6 +26,14 @@ function toRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
+export type MessagingSearchUser = {
+  avatar_url: string | null;
+  display_name: string;
+  id: string;
+  is_verified: boolean;
+  username: string | null;
+};
+
 export async function getConversationsForUser(
   userId: string,
 ): Promise<ConversationSummary[]> {
@@ -141,6 +149,22 @@ export async function getConversationsForUser(
         new Date(right.lastActivityAt).getTime() -
         new Date(left.lastActivityAt).getTime(),
     );
+}
+
+export async function searchMessagingUsers(query: string): Promise<{
+  error: string | null;
+  users: MessagingSearchUser[];
+}> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_messaging_users", {
+    query,
+  });
+
+  if (error) {
+    return { error: "Search failed", users: [] };
+  }
+
+  return { error: null, users: (data ?? []) as MessagingSearchUser[] };
 }
 
 export async function getConversationForUser(
