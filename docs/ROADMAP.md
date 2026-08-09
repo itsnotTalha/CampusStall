@@ -5,7 +5,7 @@
 5. Project details/live preview
 6. Authentication/database
 7. Selling/upload workflow — Complete
-8. Orders/purchases
+8. Orders/purchases — Complete
 9. Messaging
 10. Seller dashboard
 11. Admin/moderation

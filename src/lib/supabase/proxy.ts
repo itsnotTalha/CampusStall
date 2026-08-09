@@ -9,8 +9,10 @@ import type { Database } from "@/types/database";
 
 const protectedPrefixes = [
   "/dashboard",
+  "/checkout",
   "/messages",
   "/orders",
+  "/purchases",
   "/saved",
   "/sell",
   "/settings",

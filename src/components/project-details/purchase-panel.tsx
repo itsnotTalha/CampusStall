@@ -12,7 +12,6 @@ import {
   type PackageOption,
   packageOptions,
 } from "@/data/project-details";
-import { useRequireAuth } from "@/hooks/use-require-auth";
 import { formatBdt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +32,6 @@ export function PurchasePanel({
     useState<PackageOption["id"]>("complete");
   const [selectedLicenseId, setSelectedLicenseId] =
     useState<LicenseOption["id"]>("personal");
-  const { checkingSession, requireAuth } = useRequireAuth();
   const selectedPackage =
     packageOptions.find((option) => option.id === selectedPackageId) ??
     packageOptions[1];
@@ -143,11 +141,10 @@ export function PurchasePanel({
         <Button
           aria-describedby="purchase-demo-note"
           className="h-11 w-full"
-          disabled={checkingSession}
-          onClick={requireAuth}
+          disabled
           type="button"
         >
-          {checkingSession ? "Checking account…" : "Buy Project"}
+          Demo listing only
         </Button>
         <Link
           className={cn(
@@ -170,7 +167,8 @@ export function PurchasePanel({
         className="mt-3 text-center text-[10px] leading-4 text-muted-foreground"
         id="purchase-demo-note"
       >
-        Purchasing is not connected in this preview.
+        Demo catalog listings are not purchasable. Published seller listings use
+        Demo Payment checkout.
       </p>
       <div className="mt-4 flex items-start gap-2 border-t pt-4 text-[10px] leading-4 text-muted-foreground">
         <ShieldCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />

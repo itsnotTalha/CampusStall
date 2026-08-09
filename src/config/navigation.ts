@@ -10,6 +10,7 @@ import {
   MessageSquare,
   NotebookPen,
   ReceiptText,
+  ShoppingBag,
 } from "lucide-react";
 
 export type NavigationItem = {
@@ -32,5 +33,6 @@ export const navigationItems: NavigationItem[] = [
   { label: "Digital Perks", href: "/perks", icon: BadgePercent },
   { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "Orders", href: "/orders", icon: ReceiptText },
+  { label: "Purchases", href: "/purchases", icon: ShoppingBag },
   { label: "Saved", href: "/saved", icon: Bookmark },
 ];

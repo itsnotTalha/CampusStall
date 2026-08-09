@@ -7,11 +7,16 @@ import type { MarketplaceProject } from "@/data/marketplace";
 import { cn } from "@/lib/utils";
 
 type SellerSummaryProps = {
+  isDemoListing?: boolean;
   project: MarketplaceProject;
   supportDays: number;
 };
 
-export function SellerSummary({ project, supportDays }: SellerSummaryProps) {
+export function SellerSummary({
+  isDemoListing = true,
+  project,
+  supportDays,
+}: SellerSummaryProps) {
   const initials = project.seller.name
     .split(" ")
     .map((part) => part[0])
@@ -38,21 +43,29 @@ export function SellerSummary({ project, supportDays }: SellerSummaryProps) {
           )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <RatingDisplay
-            rating={project.rating}
-            reviewCount={project.reviewCount}
-          />
+          {project.reviewCount > 0 ? (
+            <RatingDisplay
+              rating={project.rating}
+              reviewCount={project.reviewCount}
+            />
+          ) : (
+            <span className="text-xs text-muted-foreground">No reviews yet</span>
+          )}
           <span className="text-xs text-muted-foreground">
             Up to {supportDays} days package support
           </span>
         </div>
         <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
           <ShieldCheck aria-hidden="true" className="size-3.5 text-primary" />
-          Demo seller profile using local placeholder data.
+          {isDemoListing
+            ? "Demo seller profile using local placeholder data."
+            : "Project files and package access are protected by CampusStall."}
         </p>
       </div>
       <button
         className={cn(buttonVariants({ variant: "outline" }), "h-10 gap-2")}
+        disabled
+        title="Messaging will be enabled in Roadmap Phase 9"
         type="button"
       >
         <MessageCircle aria-hidden="true" className="size-4" />

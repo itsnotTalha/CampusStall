@@ -19,12 +19,14 @@ import { RatingDisplay } from "@/components/marketplace/rating-display";
 import { PreviewExperience } from "@/components/project-preview/preview-experience";
 import { DeliverablesGrid } from "@/components/project-details/deliverables-grid";
 import { DetailSection } from "@/components/project-details/detail-section";
+import { LivePurchasePanel } from "@/components/project-details/live-purchase-panel";
 import { PurchasePanel } from "@/components/project-details/purchase-panel";
 import { ReviewsList } from "@/components/project-details/reviews-list";
 import { SellerSummary } from "@/components/project-details/seller-summary";
 import { getProjectDetail } from "@/data/project-details";
 import { marketplaceProjects } from "@/data/marketplace";
 import { formatBdt } from "@/lib/format";
+import { getPublicDatabaseProject } from "@/lib/projects/public-project";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -50,7 +52,11 @@ export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = marketplaceProjects.find((item) => item.id === slug);
+  const mockProject = marketplaceProjects.find((item) => item.id === slug);
+  const databaseListing = mockProject
+    ? null
+    : await getPublicDatabaseProject(slug);
+  const project = mockProject ?? databaseListing?.project;
 
   if (!project) {
     return { title: "Project not found" };
@@ -58,19 +64,26 @@ export async function generateMetadata({
 
   return {
     title: project.title,
-    description: `${project.summary} Preview this demo listing on CampusStall.`,
+    description: mockProject
+      ? `${project.summary} Preview this demo listing on CampusStall.`
+      : `${project.summary} View this ready-made project on CampusStall.`,
   };
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = marketplaceProjects.find((item) => item.id === slug);
+  const mockProject = marketplaceProjects.find((item) => item.id === slug);
+  const databaseListing = mockProject
+    ? null
+    : await getPublicDatabaseProject(slug);
+  const project = mockProject ?? databaseListing?.project;
 
   if (!project) {
     notFound();
   }
 
-  const detail = getProjectDetail(project);
+  const isDemoListing = Boolean(mockProject);
+  const detail = databaseListing?.detail ?? getProjectDetail(project);
   const similarProjects = [
     ...marketplaceProjects.filter(
       (item) => item.id !== project.id && item.category === project.category,
@@ -134,11 +147,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                     />
                   )}
                 </span>
-                <RatingDisplay
-                  className="text-sm"
-                  rating={project.rating}
-                  reviewCount={project.reviewCount}
-                />
+                {project.reviewCount > 0 ? (
+                  <RatingDisplay
+                    className="text-sm"
+                    rating={project.rating}
+                    reviewCount={project.reviewCount}
+                  />
+                ) : (
+                  <span className="text-xs font-medium text-muted-foreground">
+                    New listing
+                  </span>
+                )}
                 <span className="text-xs text-muted-foreground">
                   {project.department} · {project.difficulty}
                 </span>
@@ -162,7 +181,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {formatBdt(project.price)}
               </p>
               <p className="mt-1 text-[10px] text-muted-foreground">
-                Demo listing price in BDT
+                {isDemoListing ? "Demo listing price in BDT" : "Listed price in BDT"}
               </p>
             </div>
           </header>
@@ -173,12 +192,20 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               projectTitle={project.title}
               screenshots={detail.screenshots}
             />
-            <PurchasePanel
-              basePrice={project.price}
-              commercialLicenseAvailable={detail.commercialLicenseAvailable}
-              projectId={project.id}
-              projectTitle={project.title}
-            />
+            {databaseListing ? (
+              <LivePurchasePanel
+                packages={databaseListing.packages}
+                projectId={project.id}
+                projectTitle={project.title}
+              />
+            ) : (
+              <PurchasePanel
+                basePrice={project.price}
+                commercialLicenseAvailable={detail.commercialLicenseAvailable}
+                projectId={project.id}
+                projectTitle={project.title}
+              />
+            )}
           </div>
 
           <nav
@@ -201,14 +228,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <p className="max-w-4xl text-sm leading-7 text-muted-foreground sm:text-base">
                 {detail.overview}
               </p>
-              <div className="mt-6 flex items-start gap-3 rounded-lg border border-primary/15 bg-primary/5 p-4 text-sm leading-6">
-                <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
-                <p>
-                  This is a mock marketplace listing. Review the final seller
-                  documentation, license, and deliverables before any future
-                  purchase.
-                </p>
-              </div>
+              {isDemoListing && (
+                <div className="mt-6 flex items-start gap-3 rounded-lg border border-primary/15 bg-primary/5 p-4 text-sm leading-6">
+                  <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <p>
+                    This is a mock marketplace listing. Review the final seller
+                    documentation, license, and deliverables before any future
+                    purchase.
+                  </p>
+                </div>
+              )}
             </DetailSection>
 
             <DetailSection id="features" title="Features">
@@ -269,7 +298,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             <DetailSection
               className="lg:col-span-2"
-              description="Exact files vary by the package selected. This demo shows the complete package contents."
+              description={
+                isDemoListing
+                  ? "Exact files vary by the package selected. This demo shows the complete package contents."
+                  : "Exact files and support vary by the selected package."
+              }
               id="what-you-receive"
               title="What You Receive"
             >
@@ -304,40 +337,54 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </DetailSection>
 
             <DetailSection className="lg:col-span-2" id="seller" title="Seller">
-              <SellerSummary project={project} supportDays={detail.supportDays} />
+              <SellerSummary
+                isDemoListing={isDemoListing}
+                project={project}
+                supportDays={detail.supportDays}
+              />
             </DetailSection>
 
             <DetailSection
               className="lg:col-span-2"
-              description="Placeholder reviews demonstrate the future review presentation and are not real buyer claims."
+              description={
+                isDemoListing
+                  ? "Placeholder reviews demonstrate the future review presentation and are not real buyer claims."
+                  : "Reviews from completed purchases will appear here."
+              }
               id="reviews"
               title="Reviews"
             >
-              <ReviewsList reviews={detail.reviews} />
+              {detail.reviews.length > 0 ? (
+                <ReviewsList reviews={detail.reviews} />
+              ) : (
+                <p className="text-sm text-muted-foreground">No reviews yet.</p>
+              )}
             </DetailSection>
           </div>
 
-          <section className="mt-14 border-t pt-10" id="similar-projects">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-primary">Keep exploring</p>
-                <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight">
-                  Similar Projects
-                </h2>
+          {isDemoListing && (
+            <section className="mt-14 border-t pt-10" id="similar-projects">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-primary">Keep exploring</p>
+                  <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight">
+                    Similar Projects
+                  </h2>
+                </div>
+                <Link
+                  className="text-sm font-semibold text-primary hover:underline"
+                  href={`/explore?category=${encodeURIComponent(project.category)}`}
+                >
+                  Explore {project.category}
+                </Link>
               </div>
-              <Link
-                className="text-sm font-semibold text-primary hover:underline"
-                href={`/explore?category=${encodeURIComponent(project.category)}`}
-              >
-                Explore {project.category}
-              </Link>
-            </div>
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {similarProjects.map((item) => (
-                <ProjectCard key={item.id} project={item} />
-              ))}
-            </div>
-          </section>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {similarProjects.map((item) => (
+                  <ProjectCard key={item.id} project={item} />
+                ))}
+              </div>
+            </section>
+          )}
         </PageContainer>
       </main>
       <PublicFooter />

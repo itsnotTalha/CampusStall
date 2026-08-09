@@ -947,7 +947,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_access_project_file: {
+        Args: { target_storage_path: string }
+        Returns: boolean
+      }
+      complete_demo_project_payment: {
+        Args: { target_order_id: string }
+        Returns: Database["public"]["Enums"]["order_status"]
+      }
+      create_demo_project_order: {
+        Args: { target_package_id: string }
+        Returns: string
+      }
+      get_entitled_project_file: {
+        Args: { target_order_id: string }
+        Returns: {
+          original_filename: string
+          storage_path: string
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
+      transition_project_order: {
+        Args: {
+          target_order_id: string
+          target_status: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: Database["public"]["Enums"]["order_status"]
+      }
     }
     Enums: {
       difficulty_level: "beginner" | "intermediate" | "advanced"

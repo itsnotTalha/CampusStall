@@ -151,6 +151,36 @@ async function storageObjectExists(
   return !error && data.some((object) => object.name === filename);
 }
 
+async function projectHasOrders(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  projectId: string,
+  activeOnly: boolean,
+) {
+  const { data: packages, error: packageError } = await supabase
+    .from("project_packages")
+    .select("id")
+    .eq("project_id", projectId);
+
+  if (packageError) return true;
+  if (!packages || packages.length === 0) return false;
+
+  let query = supabase
+    .from("orders")
+    .select("id")
+    .in(
+      "project_package_id",
+      packages.map((item) => item.id),
+    )
+    .limit(1);
+
+  if (activeOnly) {
+    query = query.in("status", ["pending", "paid", "delivered", "completed"]);
+  }
+
+  const { data: orders, error: orderError } = await query;
+  return orderError ? true : Boolean(orders?.length);
+}
+
 function getMediaKind(metadata: Json): "cover" | "screenshot" | null {
   if (
     metadata &&
@@ -219,6 +249,12 @@ export async function saveProjectDraftAction(
       return {
         ok: false,
         error: "Published projects cannot be edited from this workflow.",
+      };
+    }
+    if (await projectHasOrders(supabase, projectId, true)) {
+      return {
+        ok: false,
+        error: "Projects with active orders cannot be edited.",
       };
     }
 
@@ -305,6 +341,12 @@ export async function submitProjectAction(
     return {
       ok: false,
       error: "Published projects cannot be resubmitted from this workflow.",
+    };
+  }
+  if (await projectHasOrders(supabase, projectId, true)) {
+    return {
+      ok: false,
+      error: "Projects with active orders cannot be resubmitted.",
     };
   }
 
@@ -509,6 +551,12 @@ export async function deleteProjectAction(
   if (!project) return { ok: false, error: "Project listing not found." };
   if (project.status === "published") {
     return { ok: false, error: "Published projects must be archived before deletion." };
+  }
+  if (await projectHasOrders(supabase, projectId, false)) {
+    return {
+      ok: false,
+      error: "Projects with order history cannot be deleted.",
+    };
   }
 
   const [{ data: media }, { data: files }] = await Promise.all([
