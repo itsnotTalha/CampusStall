@@ -10,7 +10,7 @@ export function SidebarFooter({ auth }: { auth: AuthContext }) {
   return (
     <div className="space-y-2">
       <Link
-        href="/sell"
+        href="/sell/project"
         className={cn(
           buttonVariants({ size: "lg" }),
           "h-10 w-full justify-start gap-2.5 px-3 shadow-sm",

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LifeBuoy,
   MessageSquare,
+  NotebookPen,
   ReceiptText,
 } from "lucide-react";
 
@@ -20,6 +21,7 @@ export type NavigationItem = {
 export const navigationItems: NavigationItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Explore", href: "/explore", icon: Compass },
+  { label: "My Projects", href: "/sell/projects", icon: NotebookPen },
   {
     label: "Ready-Made Projects",
     href: "/projects",

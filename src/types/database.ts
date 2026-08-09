@@ -437,6 +437,44 @@ export type Database = {
           },
         ]
       }
+      project_files: {
+        Row: {
+          created_at: string
+          id: string
+          mime_type: string
+          original_filename: string
+          project_id: string
+          size_bytes: number
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime_type: string
+          original_filename: string
+          project_id: string
+          size_bytes: number
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          project_id?: string
+          size_bytes?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_packages: {
         Row: {
           created_at: string
@@ -579,6 +617,7 @@ export type Database = {
           license_options: Database["public"]["Enums"]["license_type"][]
           preview_metadata: Json
           published_at: string | null
+          requirements: string
           seller_id: string
           slug: string
           status: Database["public"]["Enums"]["listing_status"]
@@ -599,6 +638,7 @@ export type Database = {
           license_options?: Database["public"]["Enums"]["license_type"][]
           preview_metadata?: Json
           published_at?: string | null
+          requirements?: string
           seller_id: string
           slug: string
           status?: Database["public"]["Enums"]["listing_status"]
@@ -619,6 +659,7 @@ export type Database = {
           license_options?: Database["public"]["Enums"]["license_type"][]
           preview_metadata?: Json
           published_at?: string | null
+          requirements?: string
           seller_id?: string
           slug?: string
           status?: Database["public"]["Enums"]["listing_status"]
