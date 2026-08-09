@@ -14,21 +14,25 @@ type ProjectCardProps = {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="group h-full gap-0 py-0 shadow-xs transition-all hover:-translate-y-0.5 hover:ring-primary/25 hover:shadow-md">
+    <Card
+      className="group h-full gap-0 py-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+      variant="glass"
+    >
       <ListingThumbnail
         badge="Demo listing"
+        href={`/projects/${project.id}`}
         icon={project.icon}
         label={`${project.title} thumbnail`}
         tone={project.visualTone}
       >
         {project.hasPreview && (
-          <span className="absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-md border bg-card/95 px-2 py-1 text-[10px] font-semibold text-foreground shadow-xs">
+          <span className="pointer-events-none absolute right-3 bottom-3 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[9px] font-semibold text-slate-100 shadow-lg backdrop-blur-md">
             <Eye aria-hidden="true" className="size-3" />
             Preview
           </span>
         )}
         <SaveButton
-          className="absolute top-3 right-3"
+          className="absolute top-3 right-3 z-30 border-white/10 bg-black/45 text-slate-300 shadow-lg backdrop-blur-md hover:bg-black/60 hover:text-emerald-300"
           listingTitle={project.title}
         />
       </ListingThumbnail>
@@ -67,7 +71,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="mb-4 flex flex-wrap gap-1.5">
           {project.technologies.map((technology) => (
             <span
-              className="rounded-md bg-muted px-2 py-1 text-[11px] font-medium text-muted-foreground"
+              className="rounded-md border border-border/60 bg-background/45 px-2 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur-md dark:border-white/8 dark:bg-white/[0.045]"
               key={technology}
             >
               {technology}

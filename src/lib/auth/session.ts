@@ -2,7 +2,9 @@ import "server-only";
 
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-import type { ProfileRow } from "@/types/database";
+import type { Database } from "@/types/database";
+
+type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 export type SessionProfile = Pick<
   ProfileRow,

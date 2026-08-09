@@ -27,7 +27,7 @@ type MarketplaceFiltersProps = {
 };
 
 const selectClassName =
-  "h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none transition-colors focus:border-ring focus:ring-3 focus:ring-ring/30";
+  "h-9 w-full rounded-lg border border-input bg-background/65 px-2.5 text-sm text-foreground outline-none backdrop-blur-md transition-colors focus:border-ring focus:ring-3 focus:ring-ring/30 dark:border-white/10 dark:bg-white/[0.045]";
 
 export function MarketplaceFilters({
   filters,
@@ -35,7 +35,7 @@ export function MarketplaceFilters({
   onReset,
 }: MarketplaceFiltersProps) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-xs">
+    <div className="rounded-xl border border-border/70 bg-card/70 p-4 shadow-lg shadow-foreground/3 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:shadow-black/15">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold">Filters</h2>
         <Button

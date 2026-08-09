@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
 
 import {
@@ -13,7 +13,7 @@ import { ProjectCard } from "@/components/marketplace/project-card";
 import { ServiceCard } from "@/components/marketplace/service-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { digitalPerks, projectCategories } from "@/data/landing";
+import { digitalPerks } from "@/data/landing";
 import {
   type MarketplaceProject,
   type MarketplaceService,
@@ -77,6 +77,19 @@ export function ExploreMarketplace({
   });
   const [sort, setSort] = useState<SortOption>("recommended");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function focusSearch(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", focusSearch);
+    return () => window.removeEventListener("keydown", focusSearch);
+  }, []);
 
   const normalizedQuery = query.trim().toLowerCase();
   const hasListingFilters = Object.values(filters).some(Boolean);
@@ -151,92 +164,77 @@ export function ExploreMarketplace({
   }
 
   return (
-    <div>
-      <div className="border-b bg-card">
-        <div className="mx-auto w-full max-w-[90rem] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-primary">Marketplace</p>
-            <h1 className="mt-2 font-heading text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              Explore student-built work and talent
-            </h1>
-            <p className="mt-3 leading-7 text-muted-foreground">
-              Search demo projects, student services, and legitimate digital
-              resources from one place.
-            </p>
-          </div>
+    <div className="relative isolate overflow-hidden">
+      <div className="pointer-events-none absolute -top-40 left-[8%] -z-10 size-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-72 right-[4%] -z-10 size-80 rounded-full bg-violet-500/8 blur-3xl" />
 
-          <div className="relative mt-8 max-w-3xl">
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              aria-label="Search marketplace listings"
-              className="h-12 bg-background pr-11 pl-12 text-base shadow-sm"
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search projects, services, skills, or technology"
-              type="search"
-              value={query}
-            />
-            {query && (
-              <button
-                aria-label="Clear search"
-                className="absolute top-1/2 right-3 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                onClick={() => setQuery("")}
-                type="button"
-              >
-                <X aria-hidden="true" className="size-4" />
-              </button>
-            )}
-          </div>
+      <div className="border-b bg-card/60 backdrop-blur-xl dark:bg-background/55">
+        <div className="mx-auto w-full max-w-[90rem] px-4 py-3.5 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+            <div className="shrink-0 xl:w-48">
+              <h1 className="font-sans text-lg font-semibold tracking-[-0.025em] text-foreground dark:text-slate-100">
+                Explore marketplace
+              </h1>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Projects, services, and perks
+              </p>
+            </div>
 
-          <div
-            aria-label="Marketplace type"
-            className="mt-6 flex gap-2 overflow-x-auto pb-1"
-            role="group"
-          >
-            {marketplaceTypes.map((type) => (
-              <button
-                aria-pressed={marketplaceType === type.value}
-                className={cn(
-                  "h-9 shrink-0 rounded-lg border bg-background px-3.5 text-sm font-medium text-muted-foreground shadow-xs transition-colors hover:text-foreground",
-                  marketplaceType === type.value &&
-                    "border-primary/20 bg-primary text-primary-foreground",
-                )}
-                key={type.value}
-                onClick={() => selectMarketplaceType(type.value)}
-                type="button"
-              >
-                {type.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+            <div className="relative min-w-0 flex-1 rounded-lg border border-border/80 bg-background/75 shadow-sm backdrop-blur-xl transition-colors focus-within:border-primary/45 dark:border-white/10 dark:bg-white/[0.035]">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                aria-label="Search marketplace listings"
+                className="h-9 border-0 bg-transparent pr-11 pl-9 text-sm shadow-none focus-visible:ring-0 sm:pr-24 dark:bg-transparent"
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search projects, services, or technology"
+                ref={searchInputRef}
+                type="search"
+                value={query}
+              />
+              {query && (
+                <button
+                  aria-label="Clear search"
+                  className="absolute top-1/2 right-2 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:right-14"
+                  onClick={() => setQuery("")}
+                  type="button"
+                >
+                  <X aria-hidden="true" className="size-4" />
+                </button>
+              )}
+              <span className="pointer-events-none absolute top-1/2 right-2 hidden -translate-y-1/2 items-center rounded border border-border/70 bg-card/70 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted-foreground sm:inline-flex dark:border-white/10 dark:bg-white/[0.06]">
+                ⌘ K
+              </span>
+            </div>
 
-      <div className="border-b bg-background">
-        <div className="mx-auto flex w-full max-w-[90rem] gap-2 overflow-x-auto px-4 py-4 sm:px-6 lg:px-8">
-          <button
-            className={categoryPillClass(!filters.category)}
-            onClick={() => updateFilter("category", "")}
-            type="button"
-          >
-            All categories
-          </button>
-          {projectCategories.map((category) => (
-            <button
-              className={categoryPillClass(filters.category === category.name)}
-              key={category.slug}
-              onClick={() => updateFilter("category", category.name)}
-              type="button"
+            <div
+              aria-label="Marketplace type"
+              className="flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-muted/55 p-0.5 xl:shrink-0 dark:bg-white/[0.045]"
+              role="group"
             >
-              {category.name}
-            </button>
-          ))}
+              {marketplaceTypes.map((type) => (
+                <button
+                  aria-pressed={marketplaceType === type.value}
+                  className={cn(
+                    "h-8 shrink-0 rounded-md px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground",
+                    marketplaceType === type.value &&
+                      "bg-card text-foreground shadow-sm dark:bg-white/10",
+                  )}
+                  key={type.value}
+                  onClick={() => selectMarketplaceType(type.value)}
+                  type="button"
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-[90rem] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto w-full max-w-[90rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold">
@@ -261,7 +259,7 @@ export function ExploreMarketplace({
               <span className="sr-only sm:not-sr-only">Sort</span>
               <select
                 aria-label="Sort listings"
-                className="h-9 rounded-lg border border-input bg-card px-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-3 focus:ring-ring/30"
+                className="h-9 rounded-lg border border-input bg-card/70 px-2.5 text-sm text-foreground shadow-sm outline-none backdrop-blur-xl focus:border-ring focus:ring-3 focus:ring-ring/30 dark:border-white/10 dark:bg-white/[0.045]"
                 onChange={(event) => setSort(event.target.value as SortOption)}
                 value={sort}
               >
@@ -330,7 +328,7 @@ export function ExploreMarketplace({
             )}
 
             {resultCount === 0 && (
-              <div className="flex min-h-80 flex-col items-center justify-center rounded-xl border border-dashed bg-card px-6 text-center">
+              <div className="flex min-h-80 flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-card/65 px-6 text-center shadow-lg shadow-foreground/3 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.035]">
                 <span className="flex size-11 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <Search aria-hidden="true" className="size-5" />
                 </span>
@@ -437,11 +435,4 @@ function sortListings<T extends SortableListing>(
           b.rating * 20 + b.popularity - (a.rating * 20 + a.popularity),
       );
   }
-}
-
-function categoryPillClass(active: boolean) {
-  return cn(
-    "h-8 shrink-0 rounded-full border bg-card px-3 text-xs font-medium text-muted-foreground shadow-xs transition-colors hover:text-foreground",
-    active && "border-primary/20 bg-primary/10 text-primary",
-  );
 }

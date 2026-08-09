@@ -9,9 +9,40 @@ import { landingNavigation } from "@/data/landing";
 import { getAuthContext } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
-export async function PublicHeader() {
+export async function PublicHeader({
+  variant = "default",
+}: {
+  variant?: "default" | "compact";
+}) {
   const auth = await getAuthContext();
   const accountLabel = auth?.profile?.display_name ?? "Dashboard";
+
+  if (variant === "compact") {
+    return (
+      <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur-xl">
+        <PageContainer className="flex h-14 items-center py-0">
+          <BrandMark href="/" name="CampusStall" />
+          <span className="ml-3 hidden border-l pl-3 text-xs font-medium text-muted-foreground sm:inline">
+            Marketplace
+          </span>
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
+            <Link
+              href={auth ? "/dashboard" : "/sign-in"}
+              className={cn(
+                buttonVariants({ variant: "ghost" }),
+                "h-8 max-w-40 px-2.5 text-xs",
+              )}
+            >
+              <span className="truncate">
+                {auth ? accountLabel : "Sign in"}
+              </span>
+            </Link>
+          </div>
+        </PageContainer>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">

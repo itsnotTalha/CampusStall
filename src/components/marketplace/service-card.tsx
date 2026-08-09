@@ -13,13 +13,16 @@ type ServiceCardProps = {
 
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
-    <Card className="group h-full gap-0 py-0 shadow-xs transition-all hover:-translate-y-0.5 hover:ring-primary/25 hover:shadow-md">
+    <Card
+      className="group h-full gap-0 py-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+      variant="glass"
+    >
       <ListingThumbnail
         badge="Student service"
-        className="aspect-[16/8]"
         icon={service.icon}
         label={`${service.title} thumbnail`}
         tone={service.visualTone}
+        variant="service"
       />
       <CardHeader className="gap-2 p-5 pb-3">
         <div className="flex items-center justify-between gap-3">
@@ -56,7 +59,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <div className="mb-4 flex flex-wrap gap-1.5">
           {service.technologies.slice(0, 3).map((technology) => (
             <span
-              className="rounded-md bg-muted px-2 py-1 text-[11px] font-medium text-muted-foreground"
+              className="rounded-md border border-border/60 bg-background/45 px-2 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur-md dark:border-white/8 dark:bg-white/[0.045]"
               key={technology}
             >
               {technology}

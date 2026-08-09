@@ -20,11 +20,11 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
   return (
     <div className="min-h-svh bg-background">
-      <PublicHeader />
+      <PublicHeader variant="compact" />
       <main>
         <ExploreMarketplace initialCategory={initialCategory} />
       </main>
-      <PublicFooter />
+      <PublicFooter variant="compact" />
     </div>
   );
 }

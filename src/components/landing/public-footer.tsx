@@ -4,7 +4,39 @@ import { BrandMark } from "@/components/brand/brand-mark";
 import { PageContainer } from "@/components/layout/page-container";
 import { footerGroups } from "@/data/landing";
 
-export function PublicFooter() {
+export function PublicFooter({
+  variant = "default",
+}: {
+  variant?: "default" | "compact";
+}) {
+  if (variant === "compact") {
+    return (
+      <footer className="border-t bg-card/55 backdrop-blur-xl">
+        <PageContainer className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <BrandMark href="/" name="CampusStall" />
+            <span className="hidden h-5 border-l sm:block" />
+            <p className="text-xs text-muted-foreground">
+              Built on campus. Made for students.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+            <Link className="transition-colors hover:text-foreground" href="/">
+              Home
+            </Link>
+            <Link
+              className="transition-colors hover:text-foreground"
+              href="/dashboard"
+            >
+              Dashboard
+            </Link>
+            <span>© {new Date().getFullYear()} CampusStall</span>
+          </div>
+        </PageContainer>
+      </footer>
+    );
+  }
+
   return (
     <footer className="border-t bg-card">
       <PageContainer className="py-12 sm:py-16">

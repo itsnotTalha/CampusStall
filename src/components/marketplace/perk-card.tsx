@@ -12,7 +12,10 @@ export function PerkCard({ perk }: PerkCardProps) {
   const Icon = perk.icon;
 
   return (
-    <Card className="h-full shadow-xs transition-all hover:-translate-y-0.5 hover:ring-primary/25 hover:shadow-md">
+    <Card
+      className="h-full transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+      variant="glass"
+    >
       <CardHeader className="gap-4 px-5">
         <span className="flex size-11 items-center justify-center rounded-xl border bg-primary/10 text-primary shadow-xs">
           <Icon aria-hidden="true" className="size-5" />
