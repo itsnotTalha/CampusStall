@@ -7,7 +7,7 @@
 7. Selling/upload workflow — Complete
 8. Orders/purchases — Complete
 9. Messaging — Complete
-10. Seller dashboard
+10. Seller dashboard — Complete
 11. Admin/moderation
 12. Digital perks/project requests
 13. Testing/polish
