@@ -10,6 +10,7 @@ import {
   MessageSquare,
   NotebookPen,
   ReceiptText,
+  ShieldCheck,
   ShoppingBag,
   WandSparkles,
 } from "lucide-react";
@@ -42,3 +43,9 @@ export const navigationItems: NavigationItem[] = [
   },
   { label: "Saved", href: "/saved", icon: Bookmark },
 ];
+
+export const adminNavigationItem: NavigationItem = {
+  label: "Admin",
+  href: "/admin",
+  icon: ShieldCheck,
+};

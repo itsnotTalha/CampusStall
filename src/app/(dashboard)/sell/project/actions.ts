@@ -273,7 +273,7 @@ export async function saveProjectDraftAction(
 
     const { error } = await supabase
       .from("projects")
-      .update(projectValues)
+      .update({ ...projectValues, rejection_reason: null })
       .eq("id", projectId)
       .eq("seller_id", auth.userId);
 

@@ -2,6 +2,7 @@ import { BrandMark } from "@/components/brand/brand-mark";
 import { NavigationLinks } from "@/components/layout/navigation-links";
 import { SidebarFooter } from "@/components/layout/sidebar-footer";
 import type { AuthContext } from "@/lib/auth/session";
+import { isAdminRole } from "@/lib/auth/admin-role";
 
 export function DesktopSidebar({ auth }: { auth: AuthContext }) {
   return (
@@ -14,7 +15,7 @@ export function DesktopSidebar({ auth }: { auth: AuthContext }) {
           Marketplace
         </p>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <NavigationLinks />
+          <NavigationLinks showAdmin={isAdminRole(auth.profile?.role)} />
         </div>
         <div className="border-t border-sidebar-border pt-4">
           <SidebarFooter auth={auth} />

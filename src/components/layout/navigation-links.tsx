@@ -3,19 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { navigationItems } from "@/config/navigation";
+import { adminNavigationItem, navigationItems } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 
 type NavigationLinksProps = {
   onNavigate?: () => void;
+  showAdmin?: boolean;
 };
 
-export function NavigationLinks({ onNavigate }: NavigationLinksProps) {
+export function NavigationLinks({
+  onNavigate,
+  showAdmin = false,
+}: NavigationLinksProps) {
   const pathname = usePathname();
+  const items = showAdmin
+    ? [adminNavigationItem, ...navigationItems]
+    : navigationItems;
 
   return (
     <nav aria-label="Primary navigation" className="space-y-1">
-      {navigationItems.map((item) => {
+      {items.map((item) => {
         const isActive =
           pathname === item.href ||
           (item.href !== "/dashboard" && pathname.startsWith(`${item.href}/`));

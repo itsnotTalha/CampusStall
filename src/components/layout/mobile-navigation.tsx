@@ -16,6 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { AuthContext } from "@/lib/auth/session";
+import { isAdminRole } from "@/lib/auth/admin-role";
 
 export function MobileNavigation({ auth }: { auth: AuthContext }) {
   const [open, setOpen] = useState(false);
@@ -50,7 +51,10 @@ export function MobileNavigation({ auth }: { auth: AuthContext }) {
             Marketplace
           </p>
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <NavigationLinks onNavigate={() => setOpen(false)} />
+            <NavigationLinks
+              onNavigate={() => setOpen(false)}
+              showAdmin={isAdminRole(auth.profile?.role)}
+            />
           </div>
           <div className="border-t border-sidebar-border pt-4">
             <SidebarFooter auth={auth} />

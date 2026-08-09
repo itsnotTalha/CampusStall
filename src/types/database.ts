@@ -709,6 +709,7 @@ export type Database = {
           license_options: Database["public"]["Enums"]["license_type"][]
           preview_metadata: Json
           published_at: string | null
+          rejection_reason: string | null
           requirements: string
           seller_id: string
           slug: string
@@ -730,6 +731,7 @@ export type Database = {
           license_options?: Database["public"]["Enums"]["license_type"][]
           preview_metadata?: Json
           published_at?: string | null
+          rejection_reason?: string | null
           requirements?: string
           seller_id: string
           slug: string
@@ -751,6 +753,7 @@ export type Database = {
           license_options?: Database["public"]["Enums"]["license_type"][]
           preview_metadata?: Json
           published_at?: string | null
+          rejection_reason?: string | null
           requirements?: string
           seller_id?: string
           slug?: string

@@ -38,7 +38,7 @@ export default async function MyProjectsPage({
   const { data: projects } = await supabase
     .from("projects")
     .select(
-      "id, title, slug, status, base_price_bdt, technology_tags, updated_at, category_id",
+      "id, title, slug, status, rejection_reason, base_price_bdt, technology_tags, updated_at, category_id",
     )
     .eq("seller_id", auth.userId)
     .order("updated_at", { ascending: false });
@@ -115,6 +115,11 @@ export default async function MyProjectsPage({
               <h2 className="mt-1 text-lg font-semibold tracking-tight">
                 {project.title}
               </h2>
+              {project.status === "rejected" && project.rejection_reason && (
+                <p className="mt-2 rounded-lg border border-destructive/20 bg-destructive/8 p-3 text-xs leading-5 text-destructive">
+                  {project.rejection_reason}
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {project.technology_tags.slice(0, 4).map((tag) => (
                   <span
