@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { BadgeCheck, MessageSquareText } from "lucide-react";
 
+import { useMessagesRealtime } from "@/components/messages/messages-realtime-provider";
 import {
   formatConversationTime,
   type ConversationSummary,
@@ -15,7 +18,12 @@ export function ConversationList({
   activeConversationId?: string;
   conversations: ConversationSummary[];
 }) {
-  if (conversations.length === 0) {
+  const realtime = useMessagesRealtime();
+  const visibleConversations = realtime?.conversations ?? conversations;
+  const selectedConversationId =
+    realtime?.activeConversationId ?? activeConversationId;
+
+  if (visibleConversations.length === 0) {
     return (
       <div className="flex min-h-72 flex-col items-center justify-center px-6 text-center">
         <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -31,7 +39,7 @@ export function ConversationList({
 
   return (
     <div className="divide-y divide-border/70">
-      {conversations.map((conversation) => {
+      {visibleConversations.map((conversation) => {
         const participant = conversation.otherParticipant;
         const initials = participant.displayName
           .split(" ")
@@ -39,7 +47,7 @@ export function ConversationList({
           .join("")
           .slice(0, 2)
           .toUpperCase();
-        const isActive = conversation.id === activeConversationId;
+        const isActive = conversation.id === selectedConversationId;
 
         return (
           <Link

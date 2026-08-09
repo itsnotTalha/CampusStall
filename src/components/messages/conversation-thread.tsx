@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -10,6 +12,7 @@ import {
 import { sendMessageAction } from "@/app/(dashboard)/messages/actions";
 import { ConversationContextCard } from "@/components/messages/conversation-context-card";
 import { MessageViewport } from "@/components/messages/message-viewport";
+import { useMessagesRealtime } from "@/components/messages/messages-realtime-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,17 +29,20 @@ export function ConversationThread({
   conversation: ConversationView;
   error?: string;
 }) {
-  const participant = conversation.summary.otherParticipant;
+  const realtime = useMessagesRealtime();
+  const currentConversation = realtime?.activeConversation ?? conversation;
+  const participant = currentConversation.summary.otherParticipant;
   const initials = participant.displayName
     .split(" ")
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  const hasUnread = conversation.messages.some(
+  const hasUnread = currentConversation.messages.some(
     (message) =>
-      message.senderId !== conversation.currentUserId && message.readAt === null,
+      message.senderId !== currentConversation.currentUserId && message.readAt === null,
   );
+  const latestMessageId = currentConversation.messages.at(-1)?.id;
 
   return (
     <section className="flex min-h-[calc(100svh-11rem)] flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.035]">
@@ -79,10 +85,11 @@ export function ConversationThread({
       )}
 
       <MessageViewport
-        conversationId={conversation.summary.id}
+        conversationId={currentConversation.summary.id}
+        latestMessageId={latestMessageId}
         hasUnread={hasUnread}
       >
-        {conversation.messages.length === 0 ? (
+        {currentConversation.messages.length === 0 ? (
           <div className="flex min-h-64 flex-col items-center justify-center text-center">
             <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <MessageSquareText aria-hidden="true" className="size-5" />
@@ -94,13 +101,13 @@ export function ConversationThread({
           </div>
         ) : (
           <div className="space-y-4">
-            {conversation.messages.map((message, index) => {
-              const previous = conversation.messages[index - 1];
+            {currentConversation.messages.map((message, index) => {
+              const previous = currentConversation.messages[index - 1];
               const showDate =
                 !previous ||
                 new Date(previous.createdAt).toDateString() !==
                   new Date(message.createdAt).toDateString();
-              const isOwn = message.senderId === conversation.currentUserId;
+              const isOwn = message.senderId === currentConversation.currentUserId;
 
               return (
                 <div key={message.id}>
@@ -158,7 +165,7 @@ export function ConversationThread({
           <input
             name="conversationId"
             type="hidden"
-            value={conversation.summary.id}
+            value={currentConversation.summary.id}
           />
           <textarea
             aria-label="Message"

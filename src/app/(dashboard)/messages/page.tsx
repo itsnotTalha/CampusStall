@@ -5,6 +5,7 @@ import { BadgeCheck, MessageSquareText, Search, Send } from "lucide-react";
 
 import { openDirectConversationAction } from "@/app/(dashboard)/messages/actions";
 import { ConversationList } from "@/components/messages/conversation-list";
+import { MessagesRealtimeProvider } from "@/components/messages/messages-realtime-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -174,7 +175,12 @@ export default async function MessagesPage({
             </span>
           )}
         </div>
-        <ConversationList conversations={conversations} />
+        <MessagesRealtimeProvider
+          currentUserId={auth.userId}
+          initialConversations={conversations}
+        >
+          <ConversationList conversations={conversations} />
+        </MessagesRealtimeProvider>
       </section>
     </div>
   );
