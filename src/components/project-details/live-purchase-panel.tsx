@@ -99,7 +99,7 @@ export function LivePurchasePanel({
         </Link>
         <Link
           className={cn(buttonVariants({ variant: "outline" }), "h-10 w-full gap-2")}
-          href={`/project-help?project=${projectId}`}
+          href={`/customization-requests/new?project=${projectId}`}
         >
           <Sparkles aria-hidden="true" />
           Request Customization

@@ -181,6 +181,19 @@ async function projectHasOrders(
   return orderError ? true : Boolean(orders?.length);
 }
 
+async function projectHasCustomizationRequests(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  projectId: string,
+) {
+  const { data, error } = await supabase
+    .from("project_customization_requests")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
+
+  return error ? true : Boolean(data?.length);
+}
+
 function getMediaKind(metadata: Json): "cover" | "screenshot" | null {
   if (
     metadata &&
@@ -556,6 +569,12 @@ export async function deleteProjectAction(
     return {
       ok: false,
       error: "Projects with order history cannot be deleted.",
+    };
+  }
+  if (await projectHasCustomizationRequests(supabase, projectId)) {
+    return {
+      ok: false,
+      error: "Projects with customization request history cannot be deleted.",
     };
   }
 

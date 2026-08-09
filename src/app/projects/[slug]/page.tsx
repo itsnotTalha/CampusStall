@@ -202,7 +202,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <PurchasePanel
                 basePrice={project.price}
                 commercialLicenseAvailable={detail.commercialLicenseAvailable}
-                projectId={project.id}
                 projectTitle={project.title}
               />
             )}

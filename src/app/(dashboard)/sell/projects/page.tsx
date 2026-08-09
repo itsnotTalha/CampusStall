@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Clock3, FolderKanban, Pencil, Plus } from "lucide-react";
+import { Clock3, FolderKanban, Pencil, Plus, WandSparkles } from "lucide-react";
 
 import { DeleteProjectButton } from "@/components/seller/delete-project-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -62,13 +62,22 @@ export default async function MyProjectsPage({
             Manage drafts and track listings submitted for review.
           </p>
         </div>
-        <Link
-          className={cn(buttonVariants(), "gap-2")}
-          href="/sell/project"
-        >
-          <Plus aria-hidden="true" />
-          New project
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
+            href="/sell/customization-requests"
+          >
+            <WandSparkles aria-hidden="true" />
+            Requests
+          </Link>
+          <Link
+            className={cn(buttonVariants(), "gap-2")}
+            href="/sell/project"
+          >
+            <Plus aria-hidden="true" />
+            New project
+          </Link>
+        </div>
       </header>
 
       {submitted === "1" && (

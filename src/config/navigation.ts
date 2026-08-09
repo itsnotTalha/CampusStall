@@ -11,6 +11,7 @@ import {
   NotebookPen,
   ReceiptText,
   ShoppingBag,
+  WandSparkles,
 } from "lucide-react";
 
 export type NavigationItem = {
@@ -34,5 +35,10 @@ export const navigationItems: NavigationItem[] = [
   { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "Orders", href: "/orders", icon: ReceiptText },
   { label: "Purchases", href: "/purchases", icon: ShoppingBag },
+  {
+    label: "Customization",
+    href: "/customization-requests",
+    icon: WandSparkles,
+  },
   { label: "Saved", href: "/saved", icon: Bookmark },
 ];

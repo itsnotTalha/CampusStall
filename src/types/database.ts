@@ -475,6 +475,85 @@ export type Database = {
           },
         ]
       }
+      project_customization_requests: {
+        Row: {
+          accepted_at: string | null
+          budget_bdt: number
+          buyer_id: string
+          completed_at: string | null
+          created_at: string
+          deadline: string
+          id: string
+          note: string | null
+          project_id: string
+          project_slug: string
+          project_title: string
+          requested_changes: string
+          seller_id: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["customization_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          budget_bdt: number
+          buyer_id: string
+          completed_at?: string | null
+          created_at?: string
+          deadline: string
+          id?: string
+          note?: string | null
+          project_id: string
+          project_slug: string
+          project_title: string
+          requested_changes: string
+          seller_id: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["customization_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          budget_bdt?: number
+          buyer_id?: string
+          completed_at?: string | null
+          created_at?: string
+          deadline?: string
+          id?: string
+          note?: string | null
+          project_id?: string
+          project_slug?: string
+          project_title?: string
+          requested_changes?: string
+          seller_id?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["customization_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_customization_requests_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_customization_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_customization_requests_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_packages: {
         Row: {
           created_at: string
@@ -959,6 +1038,16 @@ export type Database = {
         Args: { target_package_id: string }
         Returns: string
       }
+      create_project_customization_request: {
+        Args: {
+          optional_note?: string
+          proposed_budget_bdt: number
+          requested_changes: string
+          requested_deadline: string
+          target_project_id: string
+        }
+        Returns: string
+      }
       get_entitled_project_file: {
         Args: { target_order_id: string }
         Returns: {
@@ -974,8 +1063,22 @@ export type Database = {
         }
         Returns: Database["public"]["Enums"]["order_status"]
       }
+      transition_project_customization_request: {
+        Args: {
+          target_request_id: string
+          target_status: Database["public"]["Enums"]["customization_request_status"]
+        }
+        Returns: Database["public"]["Enums"]["customization_request_status"]
+      }
     }
     Enums: {
+      customization_request_status:
+        | "pending"
+        | "accepted"
+        | "declined"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       difficulty_level: "beginner" | "intermediate" | "advanced"
       license_type: "learning_personal" | "single_project" | "commercial"
       listing_status:
@@ -1125,6 +1228,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      customization_request_status: [
+        "pending",
+        "accepted",
+        "declined",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       difficulty_level: ["beginner", "intermediate", "advanced"],
       license_type: ["learning_personal", "single_project", "commercial"],
       listing_status: ["draft", "pending", "published", "rejected", "archived"],

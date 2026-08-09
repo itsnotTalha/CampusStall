@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Check, ShieldCheck, Sparkles } from "lucide-react";
 
@@ -18,14 +17,12 @@ import { cn } from "@/lib/utils";
 type PurchasePanelProps = {
   basePrice: number;
   commercialLicenseAvailable: boolean;
-  projectId: string;
   projectTitle: string;
 };
 
 export function PurchasePanel({
   basePrice,
   commercialLicenseAvailable,
-  projectId,
   projectTitle,
 }: PurchasePanelProps) {
   const [selectedPackageId, setSelectedPackageId] =
@@ -146,16 +143,18 @@ export function PurchasePanel({
         >
           Demo listing only
         </Button>
-        <Link
+        <button
           className={cn(
             buttonVariants({ variant: "outline" }),
             "h-10 w-full gap-2",
           )}
-          href={`/project-help?project=${projectId}`}
+          disabled
+          title="Customization requests are available on published seller listings"
+          type="button"
         >
           <Sparkles aria-hidden="true" className="size-4" />
           Request Customization
-        </Link>
+        </button>
         <SaveButton
           className="bg-background"
           listingTitle={projectTitle}
