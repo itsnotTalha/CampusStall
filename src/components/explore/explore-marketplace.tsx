@@ -22,7 +22,7 @@ import {
 } from "@/data/marketplace";
 import { cn } from "@/lib/utils";
 
-type MarketplaceType = "all" | "projects" | "services" | "perks";
+export type MarketplaceType = "all" | "projects" | "services" | "perks";
 type SortOption =
   | "recommended"
   | "popular"
@@ -63,14 +63,18 @@ const initialFilters: MarketplaceFilterState = {
 
 type ExploreMarketplaceProps = {
   initialCategory?: string;
+  initialQuery?: string;
+  initialType?: MarketplaceType;
 };
 
 export function ExploreMarketplace({
   initialCategory = "",
+  initialQuery = "",
+  initialType = "all",
 }: ExploreMarketplaceProps) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [marketplaceType, setMarketplaceType] =
-    useState<MarketplaceType>("all");
+    useState<MarketplaceType>(initialType);
   const [filters, setFilters] = useState<MarketplaceFilterState>({
     ...initialFilters,
     category: initialCategory,

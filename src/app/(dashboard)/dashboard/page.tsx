@@ -217,11 +217,11 @@ export default async function DashboardPage() {
             value={String(data.buyer.savedProjectCount)}
           />
           <AnalyticsCard
-            detail="Customization requests sent"
+            detail="Project help and customization"
             href="/customization-requests"
             icon={WandSparkles}
             label="Requests"
-            value={String(data.buyer.requests.length)}
+            value={String(data.buyer.totalRequestCount)}
           />
           <AnalyticsCard
             detail={`${data.buyer.conversations.length} conversation${data.buyer.conversations.length === 1 ? "" : "s"}`}
@@ -246,7 +246,7 @@ export default async function DashboardPage() {
           <DashboardPanel
             actionHref="/customization-requests"
             actionLabel="View all"
-            title="Recent requests"
+            title="Recent customization requests"
           >
             <DashboardRequestList
               perspective="buyer"

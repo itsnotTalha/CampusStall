@@ -25,8 +25,10 @@ import { ReviewsList } from "@/components/project-details/reviews-list";
 import { SellerSummary } from "@/components/project-details/seller-summary";
 import { getProjectDetail } from "@/data/project-details";
 import { marketplaceProjects } from "@/data/marketplace";
+import { getAuthContext } from "@/lib/auth/session";
 import { formatBdt } from "@/lib/format";
 import { getPublicDatabaseProject } from "@/lib/projects/public-project";
+import { isProjectSaved } from "@/lib/saved/queries";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -84,6 +86,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const isDemoListing = Boolean(mockProject);
   const detail = databaseListing?.detail ?? getProjectDetail(project);
+  const auth = databaseListing ? await getAuthContext() : null;
+  const initialSaved =
+    databaseListing && auth
+      ? await isProjectSaved(auth.userId, databaseListing.databaseProjectId)
+      : false;
   const similarProjects = [
     ...marketplaceProjects.filter(
       (item) => item.id !== project.id && item.category === project.category,
@@ -194,6 +201,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             />
             {databaseListing ? (
               <LivePurchasePanel
+                initialSaved={initialSaved}
                 packages={databaseListing.packages}
                 projectId={databaseListing.databaseProjectId}
                 projectTitle={project.title}

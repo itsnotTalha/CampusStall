@@ -9,9 +9,10 @@ import { formatBdt } from "@/lib/format";
 
 type ServiceCardProps = {
   service: MarketplaceService;
+  href?: string;
 };
 
-export function ServiceCard({ service }: ServiceCardProps) {
+export function ServiceCard({ service, href }: ServiceCardProps) {
   return (
     <Card
       className="group h-full gap-0 py-0 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
@@ -34,14 +35,20 @@ export function ServiceCard({ service }: ServiceCardProps) {
             reviewCount={service.reviewCount}
           />
         </div>
-        <Link
-          href={`/services/${service.id}`}
-          className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
+        {href ? (
+          <Link
+            className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            href={href}
+          >
+            <h3 className="font-heading text-base leading-6 font-semibold tracking-[-0.015em]">
+              {service.title}
+            </h3>
+          </Link>
+        ) : (
           <h3 className="font-heading text-base leading-6 font-semibold tracking-[-0.015em]">
             {service.title}
           </h3>
-        </Link>
+        )}
         <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">
           {service.summary}
         </p>

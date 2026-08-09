@@ -15,10 +15,12 @@ import { formatBdt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function LivePurchasePanel({
+  initialSaved,
   packages,
   projectId,
   projectTitle,
 }: {
+  initialSaved: boolean;
   packages: PublicProjectPackage[];
   projectId: string;
   projectTitle: string;
@@ -104,7 +106,13 @@ export function LivePurchasePanel({
           <Sparkles aria-hidden="true" />
           Request Customization
         </Link>
-        <SaveButton className="bg-background" listingTitle={projectTitle} showLabel />
+        <SaveButton
+          className="bg-background"
+          initialSaved={initialSaved}
+          listingTitle={projectTitle}
+          projectId={projectId}
+          showLabel
+        />
       </div>
 
       <div className="mt-4 flex items-start gap-2 border-t pt-4 text-[10px] leading-4 text-muted-foreground">

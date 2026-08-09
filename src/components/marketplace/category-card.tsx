@@ -13,7 +13,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link
-      href={`/explore?category=${category.slug}`}
+      href={`/explore?category=${encodeURIComponent(category.name)}`}
       className="group flex min-h-32 flex-col justify-between rounded-xl border bg-card p-4 shadow-xs outline-none transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring sm:min-h-36 sm:p-5"
     >
       <span

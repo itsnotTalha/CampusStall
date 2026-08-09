@@ -9,6 +9,6 @@
 9. Messaging — Complete
 10. Seller dashboard — Complete
 11. Admin/moderation
-12. Digital perks/project requests
+12. Digital perks/project requests — Complete
 13. Testing/polish
 14. Vercel deployment

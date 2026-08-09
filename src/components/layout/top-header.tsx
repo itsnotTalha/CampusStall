@@ -1,11 +1,13 @@
-import { Bell, CircleHelp } from "lucide-react";
+import Link from "next/link";
+import { CircleHelp } from "lucide-react";
 
 import { BrandMark } from "@/components/brand/brand-mark";
 import { MarketplaceSearch } from "@/components/layout/marketplace-search";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { AuthContext } from "@/lib/auth/session";
+import { cn } from "@/lib/utils";
 
 export function TopHeader({ auth }: { auth: AuthContext }) {
   return (
@@ -16,23 +18,16 @@ export function TopHeader({ auth }: { auth: AuthContext }) {
         <MarketplaceSearch className="ml-auto hidden max-w-xl sm:block lg:ml-0" />
         <div className="ml-auto flex items-center gap-1">
           <ThemeToggle />
-          <Button
+          <Link
             aria-label="Help and support"
-            className="hidden text-muted-foreground sm:inline-flex"
-            size="icon"
-            variant="ghost"
+            className={cn(
+              buttonVariants({ size: "icon", variant: "ghost" }),
+              "hidden text-muted-foreground sm:inline-flex",
+            )}
+            href="/project-help"
           >
             <CircleHelp aria-hidden="true" />
-          </Button>
-          <Button
-            aria-label="Notifications"
-            className="relative text-muted-foreground"
-            size="icon"
-            variant="ghost"
-          >
-            <Bell aria-hidden="true" />
-            <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary ring-2 ring-background" />
-          </Button>
+          </Link>
         </div>
       </div>
       <div className="px-4 pb-3 sm:hidden">

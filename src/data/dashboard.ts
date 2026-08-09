@@ -25,6 +25,7 @@ export type DashboardData = {
     purchases: OrderView[];
     requests: CustomizationRequestView[];
     savedProjectCount: number;
+    totalRequestCount: number;
     unreadMessageCount: number;
   };
   seller: {

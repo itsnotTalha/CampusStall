@@ -114,7 +114,7 @@ export function SignUpForm() {
           <span>
             <span className="block text-sm font-semibold">I want to sell on CampusStall</span>
             <span className="mt-1 block text-xs leading-5 text-muted-foreground">
-              Enables seller status on your profile. Listing tools will be added later.
+              Enables seller tools for projects, orders, and customization requests.
             </span>
           </span>
         </label>
