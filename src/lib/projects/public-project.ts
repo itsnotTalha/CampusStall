@@ -7,10 +7,30 @@ import type {
   DeliverableName,
   ProjectDetail,
 } from "@/data/project-details";
-import type { MarketplaceProject } from "@/data/marketplace";
+import type {
+  MarketplaceProject,
+  PublicMarketplaceProject,
+} from "@/data/marketplace";
 import type { PublicProjectPackage } from "@/data/orders";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
+
+type ProjectListingRow = Pick<
+  Database["public"]["Tables"]["projects"]["Row"],
+  | "base_price_bdt"
+  | "category_id"
+  | "created_at"
+  | "department"
+  | "description"
+  | "difficulty"
+  | "id"
+  | "preview_metadata"
+  | "seller_id"
+  | "slug"
+  | "technology_tags"
+  | "title"
+>;
 
 export type PublicDatabaseProject = {
   databaseProjectId: string;
@@ -53,6 +73,123 @@ function readDemoUrl(metadata: unknown) {
   const value = (metadata as Record<string, unknown>).demo_url;
   return typeof value === "string" && value.length > 0 ? value : null;
 }
+
+function toMarketplaceProject(
+  row: ProjectListingRow,
+  category: string,
+  seller: { display_name: string; is_verified: boolean },
+  price: number,
+  reviews: { rating: number; reviewCount: number } = {
+    rating: 0,
+    reviewCount: 0,
+  },
+): PublicMarketplaceProject {
+  return {
+    category,
+    createdAt: row.created_at,
+    databaseProjectId: row.id,
+    department: row.department,
+    difficulty: capitalizeDifficulty(row.difficulty),
+    hasPreview: Boolean(readDemoUrl(row.preview_metadata)),
+    id: row.slug,
+    isDemoListing: false,
+    popularity: 0,
+    price,
+    rating: reviews.rating,
+    reviewCount: reviews.reviewCount,
+    seller: { name: seller.display_name, verified: seller.is_verified },
+    summary: row.description,
+    technologies: row.technology_tags,
+    title: row.title,
+    visualTone:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300",
+  };
+}
+
+export const getPublicMarketplaceProjects = cache(async function getPublicMarketplaceProjects(): Promise<PublicMarketplaceProject[]> {
+  if (!isSupabaseConfigured()) return [];
+
+  const supabase = await createClient();
+  const { data: rows } = await supabase
+    .from("projects")
+    .select(
+      "id, seller_id, category_id, title, slug, description, department, difficulty, technology_tags, base_price_bdt, preview_metadata, created_at",
+    )
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  if (!rows || rows.length === 0) return [];
+
+  const projectIds = rows.map((row) => row.id);
+  const categoryIds = [...new Set(rows.map((row) => row.category_id))];
+  const sellerIds = [...new Set(rows.map((row) => row.seller_id))];
+  const [
+    { data: categories },
+    { data: sellers },
+    { data: packages },
+    { data: reviews },
+  ] = await Promise.all([
+    supabase.from("categories").select("id, name").in("id", categoryIds),
+    supabase
+      .from("profiles")
+      .select("id, display_name, is_verified")
+      .in("id", sellerIds),
+    supabase
+      .from("project_packages")
+      .select("project_id, price_bdt")
+      .in("project_id", projectIds)
+      .eq("is_active", true),
+    supabase
+      .from("reviews")
+      .select("project_id, rating")
+      .in("project_id", projectIds)
+      .eq("is_published", true),
+  ]);
+  const categoryNames = new Map(
+    (categories ?? []).map((category) => [category.id, category.name]),
+  );
+  const sellersById = new Map(
+    (sellers ?? []).map((seller) => [seller.id, seller]),
+  );
+  const minimumPrices = new Map<string, number>();
+  const ratingsByProject = new Map<string, number[]>();
+
+  for (const item of packages ?? []) {
+    const currentPrice = minimumPrices.get(item.project_id);
+    if (currentPrice === undefined || item.price_bdt < currentPrice) {
+      minimumPrices.set(item.project_id, item.price_bdt);
+    }
+  }
+
+  for (const review of reviews ?? []) {
+    if (!review.project_id) continue;
+    const ratings = ratingsByProject.get(review.project_id) ?? [];
+    ratings.push(review.rating);
+    ratingsByProject.set(review.project_id, ratings);
+  }
+
+  return rows.flatMap((row) => {
+    const category = categoryNames.get(row.category_id);
+    const seller = sellersById.get(row.seller_id);
+    if (!category || !seller) return [];
+
+    const ratings = ratingsByProject.get(row.id) ?? [];
+    const reviewCount = ratings.length;
+    const rating = reviewCount
+      ? ratings.reduce((total, value) => total + value, 0) / reviewCount
+      : 0;
+
+    return [
+      toMarketplaceProject(
+        row,
+        category,
+        seller,
+        minimumPrices.get(row.id) ?? row.base_price_bdt,
+        { rating, reviewCount },
+      ),
+    ];
+  });
+});
 
 export const getPublicDatabaseProject = cache(async function getPublicDatabaseProject(
   slug: string,
@@ -106,29 +243,18 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
     priceBdt: item.price_bdt,
     supportDurationDays: item.support_duration_days,
   }));
-  const demoUrl = readDemoUrl(row.preview_metadata);
   const requirements = row.requirements
     .split(/\r?\n/)
     .map((item) => item.trim())
     .filter(Boolean);
   const project: MarketplaceProject = {
-    category: category.name,
-    createdAt: row.created_at,
-    department: row.department,
-    difficulty: capitalizeDifficulty(row.difficulty),
-    hasPreview: Boolean(demoUrl),
+    ...toMarketplaceProject(
+      row,
+      category.name,
+      seller,
+      packages[0]?.priceBdt ?? row.base_price_bdt,
+    ),
     icon: Code2,
-    id: row.slug,
-    popularity: 0,
-    price: packages[0]?.priceBdt ?? row.base_price_bdt,
-    rating: 0,
-    reviewCount: 0,
-    seller: { name: seller.display_name, verified: seller.is_verified },
-    summary: row.description,
-    technologies: row.technology_tags,
-    title: row.title,
-    visualTone:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300",
   };
   const deliverables = row.included_assets
     .map((asset) => deliverableNames[asset])

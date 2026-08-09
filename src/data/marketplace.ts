@@ -26,7 +26,9 @@ export type ListingSeller = {
 };
 
 export type MarketplaceProject = {
+  databaseProjectId?: string;
   id: string;
+  isDemoListing?: boolean;
   title: string;
   seller: ListingSeller;
   category: string;
@@ -43,6 +45,8 @@ export type MarketplaceProject = {
   createdAt: string;
   popularity: number;
 };
+
+export type PublicMarketplaceProject = Omit<MarketplaceProject, "icon">;
 
 export type MarketplaceService = {
   id: string;

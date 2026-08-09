@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
+import { Code2, Filter, Search, SlidersHorizontal, X } from "lucide-react";
 
 import {
   type MarketplaceFilterState,
@@ -17,6 +17,7 @@ import { digitalPerks } from "@/data/landing";
 import {
   type MarketplaceProject,
   type MarketplaceService,
+  type PublicMarketplaceProject,
   marketplaceProjects,
   marketplaceServices,
 } from "@/data/marketplace";
@@ -65,12 +66,14 @@ type ExploreMarketplaceProps = {
   initialCategory?: string;
   initialQuery?: string;
   initialType?: MarketplaceType;
+  publishedProjects?: PublicMarketplaceProject[];
 };
 
 export function ExploreMarketplace({
   initialCategory = "",
   initialQuery = "",
   initialType = "all",
+  publishedProjects = [],
 }: ExploreMarketplaceProps) {
   const [query, setQuery] = useState(initialQuery);
   const [marketplaceType, setMarketplaceType] =
@@ -97,13 +100,20 @@ export function ExploreMarketplace({
 
   const normalizedQuery = query.trim().toLowerCase();
   const hasListingFilters = Object.values(filters).some(Boolean);
+  const projectListings = useMemo(
+    () =>
+      publishedProjects.length > 0
+        ? publishedProjects.map((project) => ({ ...project, icon: Code2 }))
+        : marketplaceProjects,
+    [publishedProjects],
+  );
 
   const projects = useMemo(() => {
     if (marketplaceType !== "all" && marketplaceType !== "projects") {
       return [];
     }
 
-    const matches = marketplaceProjects.filter((project) => {
+    const matches = projectListings.filter((project) => {
       return (
         matchesSearch(project, normalizedQuery) &&
         matchesSharedFilters(project, project.price, filters) &&
@@ -112,7 +122,7 @@ export function ExploreMarketplace({
     });
 
     return sortListings(matches, sort, (project) => project.price);
-  }, [filters, marketplaceType, normalizedQuery, sort]);
+  }, [filters, marketplaceType, normalizedQuery, projectListings, sort]);
 
   const services = useMemo(() => {
     if (
@@ -242,10 +252,10 @@ export function ExploreMarketplace({
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold">
-              {resultCount} demo {resultCount === 1 ? "result" : "results"}
+              {resultCount} {resultCount === 1 ? "result" : "results"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Local sample data for the CampusStall marketplace preview.
+              Published projects and CampusStall marketplace previews.
             </p>
           </div>
           <div className="flex items-center gap-2">

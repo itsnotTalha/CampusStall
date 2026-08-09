@@ -19,7 +19,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       variant="glass"
     >
       <ListingThumbnail
-        badge="Demo listing"
+        badge={project.isDemoListing === false ? "Published" : "Demo listing"}
         href={`/projects/${project.id}`}
         icon={project.icon}
         label={`${project.title} thumbnail`}
@@ -34,6 +34,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <SaveButton
           className="absolute top-3 right-3 z-30 border-white/10 bg-black/45 text-slate-300 shadow-lg backdrop-blur-md hover:bg-black/60 hover:text-emerald-300"
           listingTitle={project.title}
+          projectId={project.databaseProjectId}
         />
       </ListingThumbnail>
       <CardHeader className="gap-2 p-5 pb-3">
@@ -81,7 +82,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="flex items-end justify-between border-t pt-4">
           <span>
             <span className="block text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-              Demo price
+              {project.isDemoListing === false ? "Price from" : "Demo price"}
             </span>
             <span className="text-base font-semibold">
               {formatBdt(project.price)}

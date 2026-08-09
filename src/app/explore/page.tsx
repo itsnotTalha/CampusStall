@@ -6,6 +6,9 @@ import {
 } from "@/components/explore/explore-marketplace";
 import { PublicFooter } from "@/components/landing/public-footer";
 import { PublicHeader } from "@/components/landing/public-header";
+import { getPublicMarketplaceProjects } from "@/lib/projects/public-project";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Explore marketplace",
@@ -22,7 +25,10 @@ type ExplorePageProps = {
 };
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
-  const { category, q, type } = await searchParams;
+  const [{ category, q, type }, publishedProjects] = await Promise.all([
+    searchParams,
+    getPublicMarketplaceProjects(),
+  ]);
   const initialCategory = Array.isArray(category) ? category[0] : category;
   const initialQuery = Array.isArray(q) ? q[0] : q;
   const requestedType = Array.isArray(type) ? type[0] : type;
@@ -44,6 +50,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           initialCategory={initialCategory}
           initialQuery={initialQuery}
           initialType={initialType}
+          publishedProjects={publishedProjects}
         />
       </main>
       <PublicFooter variant="compact" />
