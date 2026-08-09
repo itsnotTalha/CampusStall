@@ -5,6 +5,7 @@ export type MessageParticipant = {
   displayName: string;
   id: string;
   isVerified: boolean;
+  encryptionPublicKey: string | null;
 };
 
 export type ConversationContext =
@@ -36,6 +37,9 @@ export type ConversationMessage = {
   id: string;
   readAt: string | null;
   senderId: string;
+  messageType: "text" | "system" | "attachment";
+  attachmentMetadata: Record<string, unknown>;
+  encryptionIv: string | null;
 };
 
 export type ConversationSummary = {

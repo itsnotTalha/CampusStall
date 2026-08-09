@@ -50,13 +50,12 @@ export async function getConversationsForUser(
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, display_name, avatar_url, is_verified")
+      .select("id, display_name, avatar_url, is_verified, encryption_public_key")
       .in("id", otherParticipantIds),
     supabase
       .from("messages")
-      .select("id, conversation_id, sender_id, body, read_at, created_at")
+      .select("id, conversation_id, sender_id, body, read_at, created_at, message_type, attachment_metadata, encryption_iv")
       .in("conversation_id", conversationIds)
-      .eq("message_type", "text")
       .order("created_at", { ascending: false })
       .limit(500),
     supabase
@@ -75,6 +74,7 @@ export async function getConversationsForUser(
         displayName: profile.display_name,
         id: profile.id,
         isVerified: profile.is_verified,
+        encryptionPublicKey: profile.encryption_public_key,
       } satisfies MessageParticipant,
     ]),
   );
@@ -89,9 +89,11 @@ export async function getConversationsForUser(
         id: message.id,
         readAt: message.read_at,
         senderId: message.sender_id,
+        messageType: message.message_type,
+        attachmentMetadata: message.attachment_metadata,
+        encryptionIv: message.encryption_iv,
       });
     }
-
   }
 
   for (const message of unreadMessages ?? []) {
@@ -149,9 +151,8 @@ export async function getConversationForUser(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("messages")
-    .select("id, sender_id, body, read_at, created_at")
+    .select("id, sender_id, body, read_at, created_at, message_type, attachment_metadata, encryption_iv")
     .eq("conversation_id", conversationId)
-    .eq("message_type", "text")
     .order("created_at", { ascending: false })
     .limit(250);
 
@@ -165,6 +166,9 @@ export async function getConversationForUser(
       id: message.id,
       readAt: message.read_at,
       senderId: message.sender_id,
+      messageType: message.message_type,
+      attachmentMetadata: message.attachment_metadata,
+      encryptionIv: message.encryption_iv,
     })),
     summary,
   };

@@ -87,3 +87,42 @@ export async function markConversationReadAction(conversationId: string) {
   revalidatePath(`/messages/${conversationId}`);
   return { ok: true };
 }
+
+export async function searchMessagingUsersAction(query: string) {
+  const auth = await getAuthContext();
+  if (!auth) return { users: [], error: "Not authenticated" };
+
+  if (query.length < 3) {
+    return { users: [], error: "Search query must be at least 3 characters" };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_messaging_users", {
+    query,
+  });
+
+  if (error) {
+    console.error("Search error:", error);
+    return { users: [], error: "Search failed" };
+  }
+
+  return { users: data || [], error: null };
+}
+
+export async function openDirectConversationAction(formData: FormData) {
+  const userId = readDatabaseId(formData.get("userId"));
+  if (!userId) redirect("/messages?error=invalid-user");
+
+  const auth = await getAuthContext();
+  if (!auth) redirect(`/sign-in?next=/messages`);
+
+  const supabase = await createClient();
+  const { data: conversationId, error } = await supabase.rpc(
+    "get_or_create_direct_conversation",
+    { target_user_id: userId },
+  );
+
+  if (error || !conversationId) redirect("/messages?error=unavailable");
+  revalidatePath("/messages");
+  redirect(`/messages/${conversationId}`);
+}
