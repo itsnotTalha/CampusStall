@@ -1,18 +1,20 @@
 import { BadgeCheck, MessageCircle, ShieldCheck } from "lucide-react";
 
+import { openProjectConversationAction } from "@/app/(dashboard)/messages/actions";
 import { RatingDisplay } from "@/components/marketplace/rating-display";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import type { MarketplaceProject } from "@/data/marketplace";
-import { cn } from "@/lib/utils";
 
 type SellerSummaryProps = {
+  contactProjectId?: string;
   isDemoListing?: boolean;
   project: MarketplaceProject;
   supportDays: number;
 };
 
 export function SellerSummary({
+  contactProjectId,
   isDemoListing = true,
   project,
   supportDays,
@@ -62,15 +64,26 @@ export function SellerSummary({
             : "Project files and package access are protected by CampusStall."}
         </p>
       </div>
-      <button
-        className={cn(buttonVariants({ variant: "outline" }), "h-10 gap-2")}
-        disabled
-        title="Messaging will be enabled in Roadmap Phase 9"
-        type="button"
-      >
-        <MessageCircle aria-hidden="true" className="size-4" />
-        Contact seller
-      </button>
+      {contactProjectId ? (
+        <form action={openProjectConversationAction}>
+          <input name="projectId" type="hidden" value={contactProjectId} />
+          <Button className="h-10 gap-2" type="submit" variant="outline">
+            <MessageCircle aria-hidden="true" className="size-4" />
+            Contact seller
+          </Button>
+        </form>
+      ) : (
+        <Button
+          className="h-10 gap-2"
+          disabled
+          title="Messaging is available on live listings"
+          type="button"
+          variant="outline"
+        >
+          <MessageCircle aria-hidden="true" className="size-4" />
+          Contact seller
+        </Button>
+      )}
     </div>
   );
 }

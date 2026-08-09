@@ -63,6 +63,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          context_metadata: Json
           created_at: string
           created_by: string
           id: string
@@ -70,10 +71,12 @@ export type Database = {
           order_id: string | null
           participant_a_id: string
           participant_b_id: string
+          project_id: string | null
           project_request_id: string | null
           updated_at: string
         }
         Insert: {
+          context_metadata?: Json
           created_at?: string
           created_by: string
           id?: string
@@ -81,10 +84,12 @@ export type Database = {
           order_id?: string | null
           participant_a_id: string
           participant_b_id: string
+          project_id?: string | null
           project_request_id?: string | null
           updated_at?: string
         }
         Update: {
+          context_metadata?: Json
           created_at?: string
           created_by?: string
           id?: string
@@ -92,6 +97,7 @@ export type Database = {
           order_id?: string | null
           participant_a_id?: string
           participant_b_id?: string
+          project_id?: string | null
           project_request_id?: string | null
           updated_at?: string
         }
@@ -122,6 +128,13 @@ export type Database = {
             columns: ["participant_b_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -1055,7 +1068,23 @@ export type Database = {
           storage_path: string
         }[]
       }
+      get_or_create_order_conversation: {
+        Args: { target_order_id: string }
+        Returns: string
+      }
+      get_or_create_project_conversation: {
+        Args: { target_project_id: string }
+        Returns: string
+      }
       is_admin: { Args: never; Returns: boolean }
+      mark_conversation_read: {
+        Args: { target_conversation_id: string }
+        Returns: number
+      }
+      send_conversation_message: {
+        Args: { message_body: string; target_conversation_id: string }
+        Returns: string
+      }
       transition_project_order: {
         Args: {
           target_order_id: string

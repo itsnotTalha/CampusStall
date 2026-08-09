@@ -195,7 +195,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {databaseListing ? (
               <LivePurchasePanel
                 packages={databaseListing.packages}
-                projectId={project.id}
+                projectId={databaseListing.databaseProjectId}
                 projectTitle={project.title}
               />
             ) : (
@@ -337,6 +337,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             <DetailSection className="lg:col-span-2" id="seller" title="Seller">
               <SellerSummary
+                contactProjectId={databaseListing?.databaseProjectId}
                 isDemoListing={isDemoListing}
                 project={project}
                 supportDays={detail.supportDays}

@@ -13,6 +13,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
 export type PublicDatabaseProject = {
+  databaseProjectId: string;
   detail: ProjectDetail;
   packages: PublicProjectPackage[];
   project: MarketplaceProject;
@@ -185,5 +186,5 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
     supportDays: row.support_duration_days,
   };
 
-  return { detail, packages, project };
+  return { databaseProjectId: row.id, detail, packages, project };
 });

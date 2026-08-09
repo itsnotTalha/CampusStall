@@ -18,6 +18,7 @@ import {
   completeDemoPaymentAction,
   transitionProjectOrderAction,
 } from "@/app/(dashboard)/orders/actions";
+import { openOrderConversationAction } from "@/app/(dashboard)/messages/actions";
 import { OrderStatusBadge } from "@/components/orders/order-status-badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -239,24 +240,14 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
                 View project
               </Link>
             )}
-            {isBuyer && (
-              <Button
-                className="h-10 w-full"
-                disabled
-                title="Messaging will be enabled in Roadmap Phase 9"
-                type="button"
-                variant="outline"
-              >
+            <form action={openOrderConversationAction}>
+              <input name="orderId" type="hidden" value={order.id} />
+              <Button className="h-10 w-full" type="submit" variant="outline">
                 <MessageCircle aria-hidden="true" />
-                Contact seller
+                Contact {isBuyer ? "seller" : "buyer"}
               </Button>
-            )}
+            </form>
           </div>
-          {isBuyer && (
-            <p className="mt-3 text-[10px] leading-4 text-muted-foreground">
-              Seller messaging is reserved for Phase 9.
-            </p>
-          )}
         </aside>
       </div>
     </div>
