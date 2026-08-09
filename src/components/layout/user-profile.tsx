@@ -1,32 +1,45 @@
-import { ChevronsUpDown } from "lucide-react";
+import Link from "next/link";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { placeholderUser } from "@/data/placeholder-user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { AuthContext } from "@/lib/auth/session";
 
-export function UserProfile() {
+function getInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+export function UserProfile({ auth }: { auth: AuthContext }) {
+  const name = auth.profile?.display_name ?? auth.email ?? "CampusStall student";
+  const subtitle = auth.profile?.is_seller
+    ? "Student seller"
+    : auth.profile?.department ?? "Student account";
+
   return (
-    <button
-      aria-label="Open profile menu"
+    <Link
+      aria-label="Open profile settings"
       className="flex w-full items-center gap-3 rounded-lg p-2 text-left outline-none transition-colors hover:bg-sidebar-accent/70 focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-      type="button"
+      href="/settings"
     >
       <Avatar className="bg-primary/8" size="lg">
+        {auth.profile?.avatar_url && (
+          <AvatarImage alt="" src={auth.profile.avatar_url} />
+        )}
         <AvatarFallback className="bg-primary/10 font-semibold text-primary">
-          {placeholderUser.initials}
+          {getInitials(name)}
         </AvatarFallback>
       </Avatar>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold">
-          {placeholderUser.name}
+          {name}
         </span>
         <span className="block truncate text-xs text-muted-foreground">
-          {placeholderUser.role}
+          {subtitle}
         </span>
       </span>
-      <ChevronsUpDown
-        aria-hidden="true"
-        className="size-4 text-muted-foreground"
-      />
-    </button>
+    </Link>
   );
 }

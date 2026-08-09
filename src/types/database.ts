@@ -51,6 +51,7 @@ export type ProfileRow = {
   department: string | null;
   university: string | null;
   bio: string | null;
+  is_seller: boolean;
   role: ProfileRole;
   is_verified: boolean;
   created_at: string;

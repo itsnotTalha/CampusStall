@@ -17,7 +17,11 @@ import {
 import { landingNavigation } from "@/data/landing";
 import { cn } from "@/lib/utils";
 
-export function LandingMobileNavigation() {
+export function LandingMobileNavigation({
+  isAuthenticated,
+}: {
+  isAuthenticated: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -55,21 +59,39 @@ export function LandingMobileNavigation() {
           ))}
         </nav>
         <div className="mt-auto space-y-2 border-t p-4">
-          <Link
-            href="/explore"
-            className={cn(buttonVariants({ size: "lg" }), "h-10 w-full")}
-          >
-            Explore Marketplace
-          </Link>
-          <Link
-            href="/sell"
-            className={cn(
-              buttonVariants({ size: "lg", variant: "outline" }),
-              "h-10 w-full",
-            )}
-          >
-            Sell Your Project
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/dashboard"
+                className={cn(buttonVariants({ size: "lg" }), "h-10 w-full")}
+              >
+                Open Dashboard
+              </Link>
+              <form action="/auth/sign-out" method="post">
+                <Button className="h-10 w-full" size="lg" type="submit" variant="outline">
+                  Sign out
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className={cn(buttonVariants({ size: "lg" }), "h-10 w-full")}
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "h-10 w-full",
+                )}
+              >
+                Create account
+              </Link>
+            </>
+          )}
         </div>
       </SheetContent>
     </Sheet>

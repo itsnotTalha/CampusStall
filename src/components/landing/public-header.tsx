@@ -4,11 +4,15 @@ import { BrandMark } from "@/components/brand/brand-mark";
 import { LandingMobileNavigation } from "@/components/landing/landing-mobile-navigation";
 import { PageContainer } from "@/components/layout/page-container";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { landingNavigation } from "@/data/landing";
+import { getAuthContext } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
-export function PublicHeader() {
+export async function PublicHeader() {
+  const auth = await getAuthContext();
+  const accountLabel = auth?.profile?.display_name ?? "Dashboard";
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/80">
       <PageContainer className="flex h-16 items-center py-0 lg:h-[4.5rem]">
@@ -29,12 +33,39 @@ export function PublicHeader() {
         </nav>
         <div className="ml-auto hidden items-center gap-2 md:flex">
           <ThemeToggle />
-          <Link
-            href="/sell"
-            className={cn(buttonVariants({ variant: "ghost" }), "h-9 px-3")}
-          >
-            Sell your project
-          </Link>
+          {auth ? (
+            <>
+              <Link
+                href="/dashboard"
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "h-9 max-w-44 px-3",
+                )}
+              >
+                <span className="truncate">{accountLabel}</span>
+              </Link>
+              <form action="/auth/sign-out" method="post">
+                <Button className="h-9 px-3" type="submit" variant="ghost">
+                  Sign out
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className={cn(buttonVariants({ variant: "ghost" }), "h-9 px-3")}
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sell"
+                className={cn(buttonVariants({ variant: "ghost" }), "h-9 px-3")}
+              >
+                Sell your project
+              </Link>
+            </>
+          )}
           <Link
             href="/explore"
             className={cn(buttonVariants(), "h-9 px-4 shadow-sm")}
@@ -44,7 +75,7 @@ export function PublicHeader() {
         </div>
         <div className="ml-auto flex items-center gap-1 md:hidden">
           <ThemeToggle />
-          <LandingMobileNavigation />
+          <LandingMobileNavigation isAuthenticated={Boolean(auth)} />
         </div>
       </PageContainer>
     </header>

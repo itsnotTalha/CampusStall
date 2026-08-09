@@ -12,6 +12,7 @@ import {
   type PackageOption,
   packageOptions,
 } from "@/data/project-details";
+import { useRequireAuth } from "@/hooks/use-require-auth";
 import { formatBdt } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ export function PurchasePanel({
     useState<PackageOption["id"]>("complete");
   const [selectedLicenseId, setSelectedLicenseId] =
     useState<LicenseOption["id"]>("personal");
+  const { checkingSession, requireAuth } = useRequireAuth();
   const selectedPackage =
     packageOptions.find((option) => option.id === selectedPackageId) ??
     packageOptions[1];
@@ -138,8 +140,14 @@ export function PurchasePanel({
       </fieldset>
 
       <div className="mt-5 space-y-2">
-        <Button aria-describedby="purchase-demo-note" className="h-11 w-full" type="button">
-          Buy Project
+        <Button
+          aria-describedby="purchase-demo-note"
+          className="h-11 w-full"
+          disabled={checkingSession}
+          onClick={requireAuth}
+          type="button"
+        >
+          {checkingSession ? "Checking account…" : "Buy Project"}
         </Button>
         <Link
           className={cn(

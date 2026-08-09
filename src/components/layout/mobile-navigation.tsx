@@ -15,8 +15,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { AuthContext } from "@/lib/auth/session";
 
-export function MobileNavigation() {
+export function MobileNavigation({ auth }: { auth: AuthContext }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -52,7 +53,7 @@ export function MobileNavigation() {
             <NavigationLinks onNavigate={() => setOpen(false)} />
           </div>
           <div className="border-t border-sidebar-border pt-4">
-            <SidebarFooter />
+            <SidebarFooter auth={auth} />
           </div>
         </div>
       </SheetContent>

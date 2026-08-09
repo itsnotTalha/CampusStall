@@ -7,9 +7,37 @@ import {
 } from "@/lib/supabase/env";
 import type { Database } from "@/types/database";
 
+const protectedPrefixes = [
+  "/dashboard",
+  "/messages",
+  "/orders",
+  "/saved",
+  "/sell",
+  "/settings",
+] as const;
+
+function isProtectedPath(pathname: string) {
+  return protectedPrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+function redirectToSignIn(request: NextRequest) {
+  const signInUrl = request.nextUrl.clone();
+  const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+
+  signInUrl.pathname = "/sign-in";
+  signInUrl.search = "";
+  signInUrl.searchParams.set("next", nextPath);
+
+  return NextResponse.redirect(signInUrl);
+}
+
 export async function updateSession(request: NextRequest) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.next({ request });
+    return isProtectedPath(request.nextUrl.pathname)
+      ? redirectToSignIn(request)
+      : NextResponse.next({ request });
   }
 
   const { url, publishableKey } = getSupabasePublicEnv();
@@ -33,7 +61,14 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
+  const { data: claimsData } = await supabase.auth.getClaims();
+
+  if (
+    isProtectedPath(request.nextUrl.pathname) &&
+    !claimsData?.claims?.sub
+  ) {
+    return redirectToSignIn(request);
+  }
 
   return response;
 }

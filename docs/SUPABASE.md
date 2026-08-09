@@ -18,4 +18,11 @@
    npx supabase gen types typescript --linked --schema public > src/types/database.ts
    ```
 
-The UI continues to use local mock data until a later migration task.
+5. In Supabase Auth URL settings, set the Site URL and allow `/auth/confirm` for local and deployed origins.
+6. For server-side email confirmation, update the Confirm signup template link to:
+
+   ```text
+   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/dashboard
+   ```
+
+Marketplace listings continue to use local mock data.
