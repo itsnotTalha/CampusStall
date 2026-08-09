@@ -26,6 +26,7 @@ export type ListingSeller = {
 };
 
 export type MarketplaceProject = {
+  coverUrl?: string;
   databaseProjectId?: string;
   id: string;
   isDemoListing?: boolean;

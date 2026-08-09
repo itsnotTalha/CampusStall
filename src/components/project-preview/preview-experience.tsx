@@ -1,7 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
-import { Images, MonitorPlay, PlayCircle, Sparkles } from "lucide-react";
+import {
+  ExternalLink,
+  Images,
+  MonitorPlay,
+  PlayCircle,
+  Sparkles,
+} from "lucide-react";
 
 import { DashboardPreview } from "@/components/project-preview/dashboard-preview";
 import { GenericProjectPreview } from "@/components/project-preview/generic-project-preview";
@@ -9,6 +16,7 @@ import { MachineLearningPreview } from "@/components/project-preview/machine-lea
 import { ScreenshotMock } from "@/components/project-preview/screenshot-mock";
 import type {
   ProjectPreviewKind,
+  ProjectPreviewMedia,
   ProjectScreenshot,
 } from "@/data/project-details";
 import { cn } from "@/lib/utils";
@@ -16,9 +24,11 @@ import { cn } from "@/lib/utils";
 type MediaTab = "preview" | "screenshots" | "demo";
 
 type PreviewExperienceProps = {
+  demoUrl?: string | null;
   projectTitle: string;
   previewKind: ProjectPreviewKind;
   screenshots: readonly ProjectScreenshot[];
+  uploadedMedia?: readonly ProjectPreviewMedia[];
 };
 
 const mediaTabs: { id: MediaTab; label: string; icon: typeof Sparkles }[] = [
@@ -28,21 +38,32 @@ const mediaTabs: { id: MediaTab; label: string; icon: typeof Sparkles }[] = [
 ];
 
 export function PreviewExperience({
+  demoUrl,
   projectTitle,
   previewKind,
   screenshots,
+  uploadedMedia,
 }: PreviewExperienceProps) {
+  const isLiveListing = uploadedMedia !== undefined;
+  const tabs = mediaTabs.filter(
+    (tab) => tab.id !== "demo" || !isLiveListing || Boolean(demoUrl),
+  );
   const [activeTab, setActiveTab] = useState<MediaTab>("preview");
   const [activeScreenshotId, setActiveScreenshotId] = useState(
     screenshots[0]?.id ?? "",
   );
   const activeScreenshot =
     screenshots.find((item) => item.id === activeScreenshotId) ?? screenshots[0];
+  const [activeMediaId, setActiveMediaId] = useState(
+    uploadedMedia?.[0]?.id ?? "",
+  );
+  const activeMedia =
+    uploadedMedia?.find((item) => item.id === activeMediaId) ?? uploadedMedia?.[0];
 
   return (
     <section aria-label="Project media" className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <div className="flex gap-1 overflow-x-auto border-b bg-muted/25 p-2">
-        {mediaTabs.map((tab) => {
+        {tabs.map((tab) => {
           const Icon = tab.icon;
 
           return (
@@ -62,7 +83,7 @@ export function PreviewExperience({
           );
         })}
         <span className="ml-auto hidden items-center pr-2 text-[10px] font-medium text-muted-foreground sm:flex">
-          Safe simulated media
+          {isLiveListing ? "Seller-uploaded preview media" : "Safe simulated media"}
         </span>
       </div>
 
@@ -76,7 +97,50 @@ export function PreviewExperience({
         </div>
       )}
 
-      {activeTab === "screenshots" && activeScreenshot && (
+      {activeTab === "screenshots" && uploadedMedia && uploadedMedia.length > 0 && activeMedia && (
+        <div className="bg-muted/30 p-4 sm:p-6">
+          <div className="overflow-hidden rounded-xl border bg-background">
+            <img
+              alt={activeMedia.altText}
+              className="max-h-[38rem] min-h-72 w-full object-contain"
+              src={activeMedia.url}
+            />
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+            {uploadedMedia.map((item) => (
+              <button
+                aria-label={`Show ${item.title}`}
+                aria-pressed={item.id === activeMedia.id}
+                className={cn(
+                  "overflow-hidden rounded-lg border bg-card p-1.5 text-left transition-colors",
+                  item.id === activeMedia.id &&
+                    "border-primary ring-2 ring-primary/10",
+                )}
+                key={item.id}
+                onClick={() => setActiveMediaId(item.id)}
+                type="button"
+              >
+                <img
+                  alt=""
+                  className="aspect-video w-full rounded-md object-cover"
+                  loading="lazy"
+                  src={item.url}
+                />
+                <p className="truncate px-1 pt-2 pb-1 text-[10px] font-semibold">
+                  {item.title}
+                </p>
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {activeMedia.kind === "cover" ? "Project cover" : "Seller screenshot"}
+          </p>
+        </div>
+      )}
+
+      {activeTab === "screenshots" &&
+        (!uploadedMedia || uploadedMedia.length === 0) &&
+        activeScreenshot && (
         <div className="bg-muted/30 p-4 sm:p-6">
           <div className="min-h-[22rem] sm:min-h-[30rem]">
             <ScreenshotMock layout={activeScreenshot.layout} />
@@ -108,9 +172,33 @@ export function PreviewExperience({
             {activeScreenshot.description}
           </p>
         </div>
+        )}
+
+      {activeTab === "demo" && demoUrl && (
+        <div className="flex min-h-[30rem] items-center justify-center bg-slate-950 p-6 text-white">
+          <div className="max-w-md text-center">
+            <span className="mx-auto flex size-16 items-center justify-center rounded-full border border-white/15 bg-white/10">
+              <PlayCircle aria-hidden="true" className="size-7" />
+            </span>
+            <h3 className="mt-5 text-lg font-semibold">Seller-hosted live demo</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Open the seller-provided demo in a separate tab. CampusStall does not
+              embed or execute external content on this page.
+            </p>
+            <a
+              className="mt-5 inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-emerald-400 px-4 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-300"
+              href={demoUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Open live demo
+              <ExternalLink aria-hidden="true" className="size-4" />
+            </a>
+          </div>
+        </div>
       )}
 
-      {activeTab === "demo" && (
+      {activeTab === "demo" && demoUrl === undefined && (
         <div className="flex min-h-[30rem] items-center justify-center bg-slate-950 p-6 text-white">
           <div className="max-w-md text-center">
             <span className="mx-auto flex size-16 items-center justify-center rounded-full border border-white/15 bg-white/10">

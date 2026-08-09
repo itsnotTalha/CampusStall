@@ -22,6 +22,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         badge={project.isDemoListing === false ? "Published" : "Demo listing"}
         href={`/projects/${project.id}`}
         icon={project.icon}
+        imageUrl={project.coverUrl}
         label={`${project.title} thumbnail`}
         tone={project.visualTone}
       >

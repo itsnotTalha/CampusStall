@@ -14,6 +14,14 @@ export type ProjectScreenshot = {
   layout: ScreenshotLayout;
 };
 
+export type ProjectPreviewMedia = {
+  altText: string;
+  id: string;
+  kind: "cover" | "screenshot";
+  title: string;
+  url: string;
+};
+
 export type DeliverableName =
   | "Source Code"
   | "Database"

@@ -6,6 +6,7 @@ import { Code2 } from "lucide-react";
 import type {
   DeliverableName,
   ProjectDetail,
+  ProjectPreviewMedia,
 } from "@/data/project-details";
 import type {
   MarketplaceProject,
@@ -34,7 +35,9 @@ type ProjectListingRow = Pick<
 
 export type PublicDatabaseProject = {
   databaseProjectId: string;
+  demoUrl: string | null;
   detail: ProjectDetail;
+  media: ProjectPreviewMedia[];
   packages: PublicProjectPackage[];
   project: MarketplaceProject;
 };
@@ -71,7 +74,23 @@ function readDemoUrl(metadata: unknown) {
   }
 
   const value = (metadata as Record<string, unknown>).demo_url;
-  return typeof value === "string" && value.length > 0 ? value : null;
+  if (typeof value !== "string" || value.length === 0) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function readMediaKind(metadata: unknown): "cover" | "screenshot" | null {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+
+  const value = (metadata as Record<string, unknown>).kind;
+  return value === "cover" || value === "screenshot" ? value : null;
 }
 
 function toMarketplaceProject(
@@ -79,6 +98,7 @@ function toMarketplaceProject(
   category: string,
   seller: { display_name: string; is_verified: boolean },
   price: number,
+  media: { coverUrl?: string; hasMedia?: boolean } = {},
   reviews: { rating: number; reviewCount: number } = {
     rating: 0,
     reviewCount: 0,
@@ -86,11 +106,12 @@ function toMarketplaceProject(
 ): PublicMarketplaceProject {
   return {
     category,
+    coverUrl: media.coverUrl,
     createdAt: row.created_at,
     databaseProjectId: row.id,
     department: row.department,
     difficulty: capitalizeDifficulty(row.difficulty),
-    hasPreview: Boolean(readDemoUrl(row.preview_metadata)),
+    hasPreview: Boolean(readDemoUrl(row.preview_metadata)) || Boolean(media.hasMedia),
     id: row.slug,
     isDemoListing: false,
     popularity: 0,
@@ -127,6 +148,7 @@ export const getPublicMarketplaceProjects = cache(async function getPublicMarket
     { data: categories },
     { data: sellers },
     { data: packages },
+    { data: media },
     { data: reviews },
   ] = await Promise.all([
     supabase.from("categories").select("id, name").in("id", categoryIds),
@@ -140,6 +162,13 @@ export const getPublicMarketplaceProjects = cache(async function getPublicMarket
       .in("project_id", projectIds)
       .eq("is_active", true),
     supabase
+      .from("project_media")
+      .select("project_id, storage_path, sort_order, preview_metadata")
+      .in("project_id", projectIds)
+      .eq("media_type", "image")
+      .eq("is_public", true)
+      .order("sort_order"),
+    supabase
       .from("reviews")
       .select("project_id, rating")
       .in("project_id", projectIds)
@@ -152,6 +181,10 @@ export const getPublicMarketplaceProjects = cache(async function getPublicMarket
     (sellers ?? []).map((seller) => [seller.id, seller]),
   );
   const minimumPrices = new Map<string, number>();
+  const mediaByProject = new Map<
+    string,
+    { coverUrl?: string; hasMedia: boolean }
+  >();
   const ratingsByProject = new Map<string, number[]>();
 
   for (const item of packages ?? []) {
@@ -159,6 +192,19 @@ export const getPublicMarketplaceProjects = cache(async function getPublicMarket
     if (currentPrice === undefined || item.price_bdt < currentPrice) {
       minimumPrices.set(item.project_id, item.price_bdt);
     }
+  }
+
+  for (const item of media ?? []) {
+    const current = mediaByProject.get(item.project_id) ?? { hasMedia: false };
+    current.hasMedia = true;
+
+    if (!current.coverUrl && readMediaKind(item.preview_metadata) === "cover") {
+      current.coverUrl = supabase.storage
+        .from("project-media")
+        .getPublicUrl(item.storage_path).data.publicUrl;
+    }
+
+    mediaByProject.set(item.project_id, current);
   }
 
   for (const review of reviews ?? []) {
@@ -185,6 +231,7 @@ export const getPublicMarketplaceProjects = cache(async function getPublicMarket
         category,
         seller,
         minimumPrices.get(row.id) ?? row.base_price_bdt,
+        mediaByProject.get(row.id),
         { rating, reviewCount },
       ),
     ];
@@ -208,7 +255,12 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
 
   if (!row) return null;
 
-  const [{ data: category }, { data: seller }, { data: packageRows }] =
+  const [
+    { data: category },
+    { data: seller },
+    { data: packageRows },
+    { data: mediaRows },
+  ] =
     await Promise.all([
       supabase
         .from("categories")
@@ -228,6 +280,13 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
         .eq("project_id", row.id)
         .eq("is_active", true)
         .order("price_bdt"),
+      supabase
+        .from("project_media")
+        .select("id, storage_path, title, alt_text, preview_metadata")
+        .eq("project_id", row.id)
+        .eq("media_type", "image")
+        .eq("is_public", true)
+        .order("sort_order"),
     ]);
 
   if (!category || !seller || !packageRows || packageRows.length === 0) {
@@ -243,6 +302,16 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
     priceBdt: item.price_bdt,
     supportDurationDays: item.support_duration_days,
   }));
+  const media: ProjectPreviewMedia[] = (mediaRows ?? []).map((item) => ({
+    altText: item.alt_text ?? `${row.title} preview`,
+    id: item.id,
+    kind: readMediaKind(item.preview_metadata) ?? "screenshot",
+    title: item.title ?? "Project preview",
+    url: supabase.storage.from("project-media").getPublicUrl(item.storage_path)
+      .data.publicUrl,
+  }));
+  const cover = media.find((item) => item.kind === "cover");
+  const demoUrl = readDemoUrl(row.preview_metadata);
   const requirements = row.requirements
     .split(/\r?\n/)
     .map((item) => item.trim())
@@ -253,6 +322,7 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
       category.name,
       seller,
       packages[0]?.priceBdt ?? row.base_price_bdt,
+      { coverUrl: cover?.url, hasMedia: media.length > 0 },
     ),
     icon: Code2,
   };
@@ -312,5 +382,12 @@ export const getPublicDatabaseProject = cache(async function getPublicDatabasePr
     supportDays: row.support_duration_days,
   };
 
-  return { databaseProjectId: row.id, detail, packages, project };
+  return {
+    databaseProjectId: row.id,
+    demoUrl,
+    detail,
+    media,
+    packages,
+    project,
+  };
 });
