@@ -61,12 +61,10 @@ export async function sendMessageAction(formData: FormData) {
   if (!auth) redirect(`/sign-in?next=/messages/${conversationId}`);
 
   const supabase = await createClient();
-  const { error } = await supabase.from("messages").insert({
-    attachment_metadata: {},
-    body,
-    conversation_id: conversationId,
-    message_type: "text",
-    sender_id: auth.userId,
+  const { error } = await supabase.rpc("send_conversation_message", {
+    message_body: body,
+    message_kind_input: "text",
+    target_conversation_id: conversationId,
   });
 
   if (error) redirect(`/messages/${conversationId}?error=send-failed`);
