@@ -225,6 +225,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           edited_at: string | null
+          encryption_iv: string | null
           id: string
           message_type: Database["public"]["Enums"]["message_kind"]
           read_at: string | null
@@ -236,6 +237,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           edited_at?: string | null
+          encryption_iv?: string | null
           id?: string
           message_type?: Database["public"]["Enums"]["message_kind"]
           read_at?: string | null
@@ -247,6 +249,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           edited_at?: string | null
+          encryption_iv?: string | null
           id?: string
           message_type?: Database["public"]["Enums"]["message_kind"]
           read_at?: string | null
@@ -362,6 +365,7 @@ export type Database = {
           created_at: string
           department: string | null
           display_name: string
+          encryption_public_key: string | null
           id: string
           is_seller: boolean
           is_verified: boolean
@@ -376,6 +380,7 @@ export type Database = {
           created_at?: string
           department?: string | null
           display_name: string
+          encryption_public_key?: string | null
           id: string
           is_seller?: boolean
           is_verified?: boolean
@@ -390,6 +395,7 @@ export type Database = {
           created_at?: string
           department?: string | null
           display_name?: string
+          encryption_public_key?: string | null
           id?: string
           is_seller?: boolean
           is_verified?: boolean
@@ -1071,6 +1077,10 @@ export type Database = {
           storage_path: string
         }[]
       }
+      get_or_create_direct_conversation: {
+        Args: { target_user_id: string }
+        Returns: string
+      }
       get_or_create_order_conversation: {
         Args: { target_order_id: string }
         Returns: string
@@ -1084,8 +1094,24 @@ export type Database = {
         Args: { target_conversation_id: string }
         Returns: number
       }
+      search_messaging_users: {
+        Args: { query: string }
+        Returns: {
+          avatar_url: string | null
+          display_name: string
+          id: string
+          is_verified: boolean
+          username: string | null
+        }[]
+      }
       send_conversation_message: {
-        Args: { message_body: string; target_conversation_id: string }
+        Args: {
+          message_attachment_metadata?: Json
+          message_body: string
+          message_iv?: string | null
+          message_kind_input?: Database["public"]["Enums"]["message_kind"]
+          target_conversation_id: string
+        }
         Returns: string
       }
       transition_project_order: {

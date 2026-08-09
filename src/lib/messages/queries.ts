@@ -17,7 +17,14 @@ const fallbackParticipant: MessageParticipant = {
   displayName: "CampusStall user",
   id: "unknown",
   isVerified: false,
+  encryptionPublicKey: null,
 };
+
+function toRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
 
 export async function getConversationsForUser(
   userId: string,
@@ -90,7 +97,7 @@ export async function getConversationsForUser(
         readAt: message.read_at,
         senderId: message.sender_id,
         messageType: message.message_type,
-        attachmentMetadata: message.attachment_metadata,
+        attachmentMetadata: toRecord(message.attachment_metadata),
         encryptionIv: message.encryption_iv,
       });
     }
@@ -167,7 +174,7 @@ export async function getConversationForUser(
       readAt: message.read_at,
       senderId: message.sender_id,
       messageType: message.message_type,
-      attachmentMetadata: message.attachment_metadata,
+      attachmentMetadata: toRecord(message.attachment_metadata),
       encryptionIv: message.encryption_iv,
     })),
     summary,
