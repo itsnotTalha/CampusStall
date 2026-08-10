@@ -406,94 +406,6 @@ export type Database = {
         }
         Relationships: []
       }
-      project_media: {
-        Row: {
-          alt_text: string | null
-          created_at: string
-          id: string
-          is_public: boolean
-          media_type: Database["public"]["Enums"]["media_kind"]
-          preview_metadata: Json
-          project_id: string
-          sort_order: number
-          storage_path: string
-          title: string | null
-          updated_at: string
-        }
-        Insert: {
-          alt_text?: string | null
-          created_at?: string
-          id?: string
-          is_public?: boolean
-          media_type: Database["public"]["Enums"]["media_kind"]
-          preview_metadata?: Json
-          project_id: string
-          sort_order?: number
-          storage_path: string
-          title?: string | null
-          updated_at?: string
-        }
-        Update: {
-          alt_text?: string | null
-          created_at?: string
-          id?: string
-          is_public?: boolean
-          media_type?: Database["public"]["Enums"]["media_kind"]
-          preview_metadata?: Json
-          project_id?: string
-          sort_order?: number
-          storage_path?: string
-          title?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_media_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      project_files: {
-        Row: {
-          created_at: string
-          id: string
-          mime_type: string
-          original_filename: string
-          project_id: string
-          size_bytes: number
-          storage_path: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          mime_type: string
-          original_filename: string
-          project_id: string
-          size_bytes: number
-          storage_path: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          mime_type?: string
-          original_filename?: string
-          project_id?: string
-          size_bytes?: number
-          storage_path?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_files_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       project_customization_requests: {
         Row: {
           accepted_at: string | null
@@ -569,6 +481,94 @@ export type Database = {
             columns: ["seller_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_files: {
+        Row: {
+          created_at: string
+          id: string
+          mime_type: string
+          original_filename: string
+          project_id: string
+          size_bytes: number
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime_type: string
+          original_filename: string
+          project_id: string
+          size_bytes: number
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          project_id?: string
+          size_bytes?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_media: {
+        Row: {
+          alt_text: string | null
+          created_at: string
+          id: string
+          is_public: boolean
+          media_type: Database["public"]["Enums"]["media_kind"]
+          preview_metadata: Json
+          project_id: string
+          sort_order: number
+          storage_path: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          media_type: Database["public"]["Enums"]["media_kind"]
+          preview_metadata?: Json
+          project_id: string
+          sort_order?: number
+          storage_path: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          media_type?: Database["public"]["Enums"]["media_kind"]
+          preview_metadata?: Json
+          project_id?: string
+          sort_order?: number
+          storage_path?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_media_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -704,12 +704,15 @@ export type Database = {
       }
       projects: {
         Row: {
+          access_type: string
           base_price_bdt: number
           category_id: string
           created_at: string
+          delivery_method: string
           department: string
           description: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
+          external_delivery_url: string | null
           id: string
           included_assets: string[]
           license_options: Database["public"]["Enums"]["license_type"][]
@@ -726,12 +729,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_type?: string
           base_price_bdt: number
           category_id: string
           created_at?: string
+          delivery_method?: string
           department: string
           description: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
+          external_delivery_url?: string | null
           id?: string
           included_assets?: string[]
           license_options?: Database["public"]["Enums"]["license_type"][]
@@ -748,12 +754,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_type?: string
           base_price_bdt?: number
           category_id?: string
           created_at?: string
+          delivery_method?: string
           department?: string
           description?: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          external_delivery_url?: string | null
           id?: string
           included_assets?: string[]
           license_options?: Database["public"]["Enums"]["license_type"][]
@@ -1040,16 +1049,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_project_file: {
+        Args: { target_storage_path: string }
+        Returns: boolean
+      }
       can_review_order: {
         Args: {
           target_order_id: string
           target_project_id: string
           target_service_id: string
         }
-        Returns: boolean
-      }
-      can_access_project_file: {
-        Args: { target_storage_path: string }
         Returns: boolean
       }
       complete_demo_project_payment: {
@@ -1097,29 +1106,22 @@ export type Database = {
       search_messaging_users: {
         Args: { query: string }
         Returns: {
-          avatar_url: string | null
+          avatar_url: string
           display_name: string
           id: string
           is_verified: boolean
-          username: string | null
+          username: string
         }[]
       }
       send_conversation_message: {
         Args: {
           message_attachment_metadata?: Json
           message_body: string
-          message_iv?: string | null
+          message_iv?: string
           message_kind_input?: Database["public"]["Enums"]["message_kind"]
           target_conversation_id: string
         }
         Returns: string
-      }
-      transition_project_order: {
-        Args: {
-          target_order_id: string
-          target_status: Database["public"]["Enums"]["order_status"]
-        }
-        Returns: Database["public"]["Enums"]["order_status"]
       }
       transition_project_customization_request: {
         Args: {
@@ -1127,6 +1129,13 @@ export type Database = {
           target_status: Database["public"]["Enums"]["customization_request_status"]
         }
         Returns: Database["public"]["Enums"]["customization_request_status"]
+      }
+      transition_project_order: {
+        Args: {
+          target_order_id: string
+          target_status: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: Database["public"]["Enums"]["order_status"]
       }
     }
     Enums: {

@@ -48,6 +48,52 @@ function projectPreviewMetadata(input: SellerProjectInput): Json {
   };
 }
 
+function validateExternalDeliveryUrl(
+  method: SellerProjectInput["deliveryMethod"],
+  value: string,
+): string | null {
+  if (method === "upload") {
+    return null;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return method === "github"
+      ? "Add the GitHub repository URL."
+      : "Add the Google Drive URL.";
+  }
+
+  try {
+    const url = new URL(trimmedValue);
+
+    if (url.protocol !== "https:") {
+      return "Project delivery links must use HTTPS.";
+    }
+
+    if (method === "github") {
+      if (url.hostname !== "github.com") {
+        return "Use a valid github.com repository link.";
+      }
+
+      const pathParts = url.pathname.split("/").filter(Boolean);
+      if (pathParts.length < 2) {
+        return "Enter a GitHub repository URL such as https://github.com/user/project.";
+      }
+    }
+
+    if (method === "google_drive" && url.hostname !== "drive.google.com") {
+      return "Use a valid drive.google.com link.";
+    }
+
+    return null;
+  } catch {
+    return method === "github"
+      ? "Enter a valid GitHub repository URL."
+      : "Enter a valid Google Drive URL.";
+  }
+}
+
 function validateUploadedMedia(value: unknown): UploadedMedia[] | null {
   if (!Array.isArray(value) || value.length > 7) {
     return null;
@@ -214,6 +260,14 @@ export async function saveProjectDraftAction(
   const validation = validateSellerProjectInput(input);
   if (!validation.success) return { ok: false, error: validation.error };
 
+  const deliveryUrlError = validateExternalDeliveryUrl(
+    validation.data.deliveryMethod,
+    validation.data.externalDeliveryUrl,
+  );
+  if (deliveryUrlError) {
+    return { ok: false, error: deliveryUrlError };
+  }
+
   const auth = await getAuthContext();
   if (!auth) return { ok: false, error: "Sign in to create a project listing." };
 
@@ -227,12 +281,21 @@ export async function saveProjectDraftAction(
 
   if (!category) return { ok: false, error: "Choose an active project category." };
 
+  const effectiveBasePriceBdt =
+    validation.data.accessType === "free" ? 0 : validation.data.basePriceBdt;
+
   const projectValues = {
-    base_price_bdt: validation.data.basePriceBdt,
+    access_type: validation.data.accessType,
+    base_price_bdt: effectiveBasePriceBdt,
     category_id: validation.data.categoryId,
+    delivery_method: validation.data.deliveryMethod,
     department: validation.data.department,
     description: validation.data.description,
     difficulty: validation.data.difficulty,
+    external_delivery_url:
+      validation.data.deliveryMethod === "upload"
+        ? null
+        : validation.data.externalDeliveryUrl.trim(),
     included_assets: validation.data.includedAssets,
     license_options: [validation.data.licenseType],
     preview_metadata: projectPreviewMetadata(validation.data),
@@ -329,6 +392,21 @@ export async function submitProjectAction(
     return { ok: false, error: "Invalid project archive information." };
   }
 
+  const deliveryUrlError = validateExternalDeliveryUrl(
+    validation.data.deliveryMethod,
+    validation.data.externalDeliveryUrl,
+  );
+  if (deliveryUrlError) {
+    return { ok: false, error: deliveryUrlError };
+  }
+
+  if (validation.data.deliveryMethod !== "upload" && uploadedArchive) {
+    return {
+      ok: false,
+      error: "Do not upload a project archive when using GitHub or Google Drive delivery.",
+    };
+  }
+
   const auth = await getAuthContext();
   if (!auth) return { ok: false, error: "Your session has expired." };
 
@@ -420,7 +498,11 @@ export async function submitProjectAction(
     return { ok: false, error: "Add a cover image before submitting." };
   }
 
-  if (!hasExistingArchive && !archive) {
+  if (
+    validation.data.deliveryMethod === "upload" &&
+    !hasExistingArchive &&
+    !archive
+  ) {
     return { ok: false, error: "Add a private project archive before submitting." };
   }
 
@@ -490,15 +572,69 @@ export async function submitProjectAction(
     }
   }
 
+  /*
+   * If the seller changes an existing listing from an uploaded archive
+   * to GitHub or Google Drive, remove the old private archive metadata
+   * and storage object so the project has only one active delivery source.
+   */
+  if (
+    validation.data.deliveryMethod !== "upload" &&
+    existingFiles &&
+    existingFiles.length > 0
+  ) {
+    const { error: fileDeleteError } = await supabase
+      .from("project_files")
+      .delete()
+      .in(
+        "id",
+        existingFiles.map((file) => file.id),
+      );
+
+    if (fileDeleteError) {
+      return {
+        ok: false,
+        error: "Unable to remove the previous project archive.",
+      };
+    }
+
+    const { error: archiveRemoveError } = await supabase.storage
+      .from("project-archives")
+      .remove(existingFiles.map((file) => file.storage_path));
+
+    if (archiveRemoveError) {
+      return {
+        ok: false,
+        error: "Unable to remove the previous private archive.",
+      };
+    }
+  }
+
   const { error: packageDeleteError } = await supabase
     .from("project_packages")
     .delete()
     .eq("project_id", projectId);
   if (packageDeleteError) return { ok: false, error: "Unable to update packages." };
 
-  const selectedPackages = packageOptions.filter((option) =>
+  const effectiveBasePriceBdt =
+    validation.data.accessType === "free" ? 0 : validation.data.basePriceBdt;
+
+  let selectedPackages = packageOptions.filter((option) =>
     validation.data.packageOptions.includes(option.value),
   );
+
+  if (validation.data.accessType === "free") {
+    const sourceOnlyPackage = packageOptions.find(
+      (option) => option.value === "source_only",
+    );
+    selectedPackages = sourceOnlyPackage
+      ? [sourceOnlyPackage]
+      : selectedPackages.slice(0, 1);
+  }
+
+  if (selectedPackages.length === 0) {
+    return { ok: false, error: "Select at least one project package." };
+  }
+
   const { error: packageInsertError } = await supabase
     .from("project_packages")
     .insert(
@@ -508,7 +644,7 @@ export async function submitProjectAction(
         license_type: validation.data.licenseType,
         name: option.label,
         package_type: option.value,
-        price_bdt: Math.round(validation.data.basePriceBdt * option.multiplier),
+        price_bdt: Math.round(effectiveBasePriceBdt * option.multiplier),
         project_id: projectId,
         support_duration_days:
           option.value === "complete_support"
@@ -521,11 +657,17 @@ export async function submitProjectAction(
   const { error: submitError } = await supabase
     .from("projects")
     .update({
-      base_price_bdt: validation.data.basePriceBdt,
+      access_type: validation.data.accessType,
+      base_price_bdt: effectiveBasePriceBdt,
       category_id: validation.data.categoryId,
+      delivery_method: validation.data.deliveryMethod,
       department: validation.data.department,
       description: validation.data.description,
       difficulty: validation.data.difficulty,
+      external_delivery_url:
+        validation.data.deliveryMethod === "upload"
+          ? null
+          : validation.data.externalDeliveryUrl.trim(),
       included_assets: validation.data.includedAssets,
       license_options: [validation.data.licenseType],
       preview_metadata: projectPreviewMetadata(validation.data),
