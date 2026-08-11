@@ -77,32 +77,6 @@ function capitalizeDifficulty(
   )}` as MarketplaceProject["difficulty"];
 }
 
-function getPreviewKind(
-  category: string,
-  technologies: string[],
-) {
-  const searchable =
-    `${category} ${technologies.join(" ")}`.toLowerCase();
-
-  if (
-    /machine learning|computer vision|tensorflow|pytorch|scikit/.test(
-      searchable,
-    )
-  ) {
-    return "machine-learning" as const;
-  }
-
-  if (
-    /web|dashboard|next|react|vue|angular/.test(
-      searchable,
-    )
-  ) {
-    return "dashboard" as const;
-  }
-
-  return "generic" as const;
-}
-
 function readDemoUrl(
   metadata: unknown,
 ) {
@@ -899,11 +873,16 @@ export const getPublicDatabaseProject =
           overview:
             row.description,
 
-          previewKind:
-            getPreviewKind(
-              category.name,
-              row.technology_tags,
-            ),
+          /*
+           * Real seller listings must never invent an interactive
+           * preview from their category or technology tags.
+           *
+           * PreviewExperience will use the seller-provided media and
+           * demo URL instead. "generic" is kept only to satisfy the
+           * existing ProjectDetail type until the preview component is
+           * cleaned up in the next step.
+           */
+          previewKind: "generic",
 
           requirements:
             requirements.length >
@@ -915,34 +894,11 @@ export const getPublicDatabaseProject =
 
           reviews: [],
 
-          screenshots: [
-            {
-              id: `${row.id}-overview`,
-              title:
-                "Project overview",
-              description:
-                "Simulated overview based on this listing's project type.",
-              layout:
-                "overview",
-            },
-            {
-              id: `${row.id}-workspace`,
-              title:
-                "Main workspace",
-              description:
-                "Simulated workspace for preview purposes.",
-              layout:
-                "workspace",
-            },
-            {
-              id: `${row.id}-results`,
-              title: "Results",
-              description:
-                "Simulated result presentation for this listing.",
-              layout:
-                "analytics",
-            },
-          ],
+          /*
+           * Do not generate fake overview/workspace/results screenshots.
+           * Only actual seller-uploaded media should be shown publicly.
+           */
+          screenshots: [],
 
           supportDays:
             row.support_duration_days,
